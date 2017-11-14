@@ -20,6 +20,9 @@ allprojects {
         google()
         jcenter()
     }
+    ext {
+        FirebaseVersion = "11.4.2"
+    }
 }
 
 task clean(type: Delete) {
