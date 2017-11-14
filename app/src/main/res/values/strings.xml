@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GttCheck</string>
+
+    <!--Drop down menu items-->
+    <string name="action_settings">Settings</string>
+    <string name="action_sign_out">Sign out</string>
+</resources>
