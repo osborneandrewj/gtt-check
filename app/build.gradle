@@ -33,10 +33,14 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
+    // View binding
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     // Logging
     implementation 'com.jakewharton.timber:timber:4.6.0'
 
-    // Firebase login
+    // Firebase login 
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
     implementation "com.google.android.gms:play-services-auth:$FirebaseVersion"
 

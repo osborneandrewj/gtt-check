@@ -4,4 +4,9 @@
     <!--Drop down menu items-->
     <string name="action_settings">Settings</string>
     <string name="action_sign_out">Sign out</string>
+
+    <!--Case Overview Item-->
+    <string name="label_case_iv">IV</string>
+    <string name="label_case_rx">Rx</string>
+
 </resources>

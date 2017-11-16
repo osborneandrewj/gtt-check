@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GttCheck.iml" filepath="$PROJECT_DIR$/GttCheck.iml" />
+      <module fileurl="file://C:\Users\osbor\AndroidStudioProjects\gtt-check\GttCheck.iml" filepath="C:\Users\osbor\AndroidStudioProjects\gtt-check\GttCheck.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gtt-check.iml" filepath="$PROJECT_DIR$/gtt-check.iml" />
     </modules>
   </component>
 </project>
