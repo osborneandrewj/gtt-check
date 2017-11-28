@@ -1,6 +1,7 @@
 package com.zark.gttcheck.adapters;
 
 import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,11 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
     private CaseOverviewItem mCase;
     private LayoutInflater mLayoutInflater;
     private Context mContext;
+    private final CaseOnClickHandler mClickHandler;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.cv_case) ConstraintLayout mCaseLayout;
         @BindView(R.id.tv_case_id) TextView mCaseIdNumber;
         @BindView(R.id.tv_case_count_iv) TextView mIvCount;
         @BindView(R.id.tv_case_count_rx) TextView mRxCount;
@@ -36,9 +39,11 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
         }
     }
 
-    public CaseOverviewAdapter(Context context, ArrayList<CaseOverviewItem> data) {
+    public CaseOverviewAdapter(Context context, ArrayList<CaseOverviewItem> data,
+                               CaseOnClickHandler handler) {
         mLayoutInflater = LayoutInflater.from(context);
         mDataset = data;
+        mClickHandler = handler;
     }
 
     @Override
@@ -62,6 +67,13 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
             holder.mRxCount.setText(String.valueOf(mCase.getRxCount()));
         }
 
+        holder.mCaseLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickHandler.onCaseClick();
+            }
+        });
+
     }
 
     @Override
@@ -75,5 +87,9 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
     public void setNewDataSet(ArrayList<CaseOverviewItem> newDataSet) {
         mDataset = newDataSet;
         notifyDataSetChanged();
+    }
+
+    public interface CaseOnClickHandler {
+        void onCaseClick();
     }
 }

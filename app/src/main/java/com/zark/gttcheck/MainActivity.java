@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,10 +17,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zark.gttcheck.adapters.CaseOverviewAdapter;
@@ -27,13 +30,13 @@ import com.zark.gttcheck.models.CaseOverviewItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements CaseOverviewAdapter.CaseOnClickHandler {
 
     private static final int RC_SIGN_IN = 1886;
 
@@ -41,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    private DatabaseReference mCasesDatabaseReference;
+    private ChildEventListener mCaseListener;
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
             new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
+
+    private FragmentManager mFragmentManager;
 
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.rv_cases_overview) RecyclerView mCasesRecyclerView;
@@ -70,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+        Timber.e("User ID: %s", userId);
+        mCasesDatabaseReference = mFirebaseDatabase.getReference()
+                .child("users")
+                .child(userId)
+                .child("cases");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,26 +92,23 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCaseList.add(new CaseOverviewItem(275, 13, 4));
-                mAdapter.setNewDataSet(mCaseList);
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //mCasesDatabaseReference.push().setValue("hey");
+                CaseOverviewItem newCase = new CaseOverviewItem(244, 13, 77);
+                mCasesDatabaseReference.push().setValue(newCase);
+                //mCaseList.add(new CaseOverviewItem(275, 13, 4));
+                //mAdapter.setNewDataSet(mCaseList);
             }
         });
 
-        // Cases overview
+        // Cases RecyclerView
         mCasesRecyclerView.setHasFixedSize(true);
         mCasesLayoutManager = new LinearLayoutManager(this);
         mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
-        mAdapter = new CaseOverviewAdapter(this, new ArrayList<CaseOverviewItem>());
+        mCaseList = new ArrayList<>();
+        mAdapter = new CaseOverviewAdapter(this, mCaseList, this);
         mCasesRecyclerView.setAdapter(mAdapter);
 
-        // Test list
-        mCaseList = new ArrayList<>();
-        mCaseList.add(new CaseOverviewItem(274, 13, 4));
-        mAdapter.setNewDataSet(mCaseList);
-        String size = String.valueOf(mAdapter.getItemCount());
-        Timber.e("Hey, we've got something: %s", size);
+        mFragmentManager = getSupportFragmentManager();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -125,13 +136,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+        detachDatabaseReadListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    /**
+     * When a RecyclerView item is clicked:
+     * 1. Hide RecyclerView
+     * 2. Inflate the fragment to a FrameLayout
+     */
+    @Override
+    public void onCaseClick() {
+        Timber.e("I've been clicked...");
+
+        // Hide the RecyclerView
+        mCasesRecyclerView.setVisibility(View.GONE);
+
+        // Inflate fragment
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        CaseFragment caseFragment = new CaseFragment();
+        transaction.add(R.id.frag_container, caseFragment).addToBackStack("tag").commit();
     }
 
     @Override
@@ -154,10 +186,52 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSignedInInitialize() {
         mCasesRecyclerView.setVisibility(View.VISIBLE);
+        attachDatabaseReadListener();
     }
 
     public void onSignedOutHideUI() {
         mCasesRecyclerView.setVisibility(View.GONE);
+    }
+
+    public void attachDatabaseReadListener() {
+        if (mCaseListener == null) {
+            mCaseListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    CaseOverviewItem newCase = dataSnapshot.getValue(CaseOverviewItem.class);
+                    mCaseList.add(newCase);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    CaseOverviewItem newCase = dataSnapshot.getValue(CaseOverviewItem.class);
+                    mCaseList.add(newCase);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            mCasesDatabaseReference.addChildEventListener(mCaseListener);
+        }
+    }
+
+    public void detachDatabaseReadListener() {
+        mCasesDatabaseReference.removeEventListener(mCaseListener);
+        Timber.e("removed event listener!");
     }
 
     @Override
@@ -187,5 +261,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * If a fragment is in the UI, remove the fragment and show the RecyclerView
+     */
+    @Override
+    public void onBackPressed() {
+        if (mFragmentManager.getBackStackEntryCount() > 0) {
+            mFragmentManager.popBackStackImmediate();
+            mCasesRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
