@@ -5,17 +5,17 @@ package com.zark.gttcheck.models;
  *
  */
 
-public class CaseOverviewItem {
+public class GttCase {
 
     private int idNumber;
     private int ivCount;
     private int rxCount;
 
-    public CaseOverviewItem() {
+    public GttCase() {
 
     }
 
-    public CaseOverviewItem(int idNumber, int ivCount, int rxCount) {
+    public GttCase(int idNumber, int ivCount, int rxCount) {
         this.idNumber = idNumber;
         this.ivCount = ivCount;
         this.rxCount = rxCount;

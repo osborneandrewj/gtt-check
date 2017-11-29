@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.zark.gttcheck.R;
-import com.zark.gttcheck.models.CaseOverviewItem;
+import com.zark.gttcheck.models.GttCase;
+
 import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,8 +21,8 @@ import butterknife.ButterKnife;
 
 public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapter.ViewHolder> {
 
-    private ArrayList<CaseOverviewItem> mDataset;
-    private CaseOverviewItem mCase;
+    private ArrayList<GttCase> mDataset;
+    private GttCase mCase;
     private LayoutInflater mLayoutInflater;
     private Context mContext;
     private final CaseOnClickHandler mClickHandler;
@@ -39,7 +40,7 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
         }
     }
 
-    public CaseOverviewAdapter(Context context, ArrayList<CaseOverviewItem> data,
+    public CaseOverviewAdapter(Context context, ArrayList<GttCase> data,
                                CaseOnClickHandler handler) {
         mLayoutInflater = LayoutInflater.from(context);
         mDataset = data;
@@ -51,7 +52,6 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
         mContext = parent.getContext();
         View view = mLayoutInflater.inflate(R.layout.case_overview_item_layout,
                 parent, false);
-        //ButterKnife.bind(this, view);
 
         return new ViewHolder(view);
     }
@@ -84,7 +84,7 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
         return 0;
     }
 
-    public void setNewDataSet(ArrayList<CaseOverviewItem> newDataSet) {
+    public void setNewDataSet(ArrayList<GttCase> newDataSet) {
         mDataset = newDataSet;
         notifyDataSetChanged();
     }

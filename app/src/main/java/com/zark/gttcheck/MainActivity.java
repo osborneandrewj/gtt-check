@@ -4,28 +4,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.zark.gttcheck.adapters.CaseOverviewAdapter;
-import com.zark.gttcheck.models.CaseOverviewItem;
+import com.zark.gttcheck.adapters.GttCaseViewHolder;
+import com.zark.gttcheck.models.GttCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +53,8 @@ public class MainActivity extends AppCompatActivity
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
     private CaseOverviewAdapter mAdapter;
-    private ArrayList<CaseOverviewItem> mCaseList;
+    private ArrayList<GttCase> mCaseList;
+    private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -93,20 +97,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //mCasesDatabaseReference.push().setValue("hey");
-                CaseOverviewItem newCase = new CaseOverviewItem(244, 13, 77);
+                GttCase newCase = new GttCase(244, 13, 77);
                 mCasesDatabaseReference.push().setValue(newCase);
-                //mCaseList.add(new CaseOverviewItem(275, 13, 4));
+                //mCaseList.add(new GttCase(275, 13, 4));
                 //mAdapter.setNewDataSet(mCaseList);
             }
         });
 
         // Cases RecyclerView
-        mCasesRecyclerView.setHasFixedSize(true);
+        //mCasesRecyclerView.setHasFixedSize(true);
         mCasesLayoutManager = new LinearLayoutManager(this);
         mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCaseList = new ArrayList<>();
         mAdapter = new CaseOverviewAdapter(this, mCaseList, this);
-        mCasesRecyclerView.setAdapter(mAdapter);
+        //mCasesRecyclerView.setAdapter(mAdapter);
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -139,7 +143,8 @@ public class MainActivity extends AppCompatActivity
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        detachDatabaseReadListener();
+        mCasesOververRVAdapter.stopListening();
+        //detachDatabaseReadListener();
     }
 
     @Override
@@ -174,8 +179,8 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 onSignedInInitialize();
-                Timber.d("User is signed in!");
-                Timber.d("Result Code: %s", resultCode);
+                Timber.e("User is signed in!");
+                Timber.e("Result Code: %s", resultCode);
             } else if (resultCode == RESULT_CANCELED) {
                 // User canceled the sign in process. Exit.
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
@@ -185,53 +190,61 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onSignedInInitialize() {
+        Timber.e("Initializing...");
         mCasesRecyclerView.setVisibility(View.VISIBLE);
-        attachDatabaseReadListener();
+        setupFirebaseAdapter();
     }
 
     public void onSignedOutHideUI() {
         mCasesRecyclerView.setVisibility(View.GONE);
     }
 
-    public void attachDatabaseReadListener() {
-        if (mCaseListener == null) {
-            mCaseListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    CaseOverviewItem newCase = dataSnapshot.getValue(CaseOverviewItem.class);
-                    mCaseList.add(newCase);
-                    mAdapter.notifyDataSetChanged();
+    public void setupFirebaseAdapter() {
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+        Timber.e("User ID here is: %s", userId);
+        Query query = mCasesDatabaseReference.limitToLast(50);
+
+        Timber.e("Getting references...");
+
+        FirebaseRecyclerOptions<GttCase> options =
+                new FirebaseRecyclerOptions.Builder<GttCase>()
+                .setQuery(query, GttCase.class)
+                .build();
+
+        mCasesOververRVAdapter = new FirebaseRecyclerAdapter<GttCase,
+                GttCaseViewHolder>(options) {
+            @Override
+            public GttCaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.case_overview_item_layout, parent, false);
+
+                return new GttCaseViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(GttCaseViewHolder holder, int position, GttCase model) {
+                if (model != null) {
+                    Timber.e("Binding!... %s", model.getIdNumber());
+                    //holder.mCaseIdNumber.setText(model.getIdNumber());
+                    //holder.rxCount.setText(model.getRxCount());
+                    holder.bind(model);
+                } else {
+                    Timber.e("Not Binding...");
                 }
+            }
+        };
 
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    CaseOverviewItem newCase = dataSnapshot.getValue(CaseOverviewItem.class);
-                    mCaseList.add(newCase);
-                    mAdapter.notifyDataSetChanged();
-                }
+        mCasesOververRVAdapter.startListening();
 
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            };
-            mCasesDatabaseReference.addChildEventListener(mCaseListener);
-        }
+        mCasesRecyclerView.setAdapter(mCasesOververRVAdapter);
+        mCasesRecyclerView.setVisibility(View.VISIBLE);
+        Timber.e("Size of adapter: %s", mCasesOververRVAdapter.getItemCount());
     }
 
     public void detachDatabaseReadListener() {
-        mCasesDatabaseReference.removeEventListener(mCaseListener);
-        Timber.e("removed event listener!");
+
     }
 
     @Override
