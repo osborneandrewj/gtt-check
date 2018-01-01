@@ -59,14 +59,6 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        // Get the current case
-        if (mDataset.size() > 0) {
-            mCase = mDataset.get(position);
-            holder.mCaseIdNumber.setText(String.valueOf(mCase.getIdNumber()));
-            holder.mIvCount.setText(String.valueOf(mCase.getIvCount()));
-            holder.mRxCount.setText(String.valueOf(mCase.getRxCount()));
-        }
-
         holder.mCaseLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -14,26 +14,55 @@ import butterknife.ButterKnife;
  *
  */
 
-public class GttCaseViewHolder extends RecyclerView.ViewHolder {
+public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     //@BindView(R.id.cv_case) ConstraintLayout mCaseLayout;
     //@BindView(R.id.tv_case_id) TextView mCaseIdNumber;
     //@BindView(R.id.tv_case_count_iv) TextView mIvCount;
     //@BindView(R.id.tv_case_count_rx) TextView mRxCount;
+    public TextView idNumber;
+    public TextView ivCount;
     public TextView rxCount;
 
-    public GttCaseViewHolder(View view) {
+    //private final View.OnClickListener mListener;
+    private GttCaseViewHolder.ClickListener mClickListener;
+
+    public GttCaseViewHolder(final View view, GttCaseViewHolder.ClickListener listener) {
         super(view);
-        ButterKnife.bind(this, view);
+
+        //ButterKnife.bind(this, view);
+        idNumber = view.findViewById(R.id.tv_case_id);
+        ivCount = view.findViewById(R.id.tv_case_count_iv);
         rxCount = view.findViewById(R.id.tv_case_count_rx);
+        mClickListener = listener;
+        view.setOnClickListener(this);
     }
 
     public void bind(GttCase gttCase) {
         setId(String.valueOf(gttCase.getIdNumber()));
+        setIvCount(String.valueOf(gttCase.getIvCount()));
+        setRxCount(String.valueOf(gttCase.getRxCount()));
     }
 
     private void setId(String id) {
-        rxCount.setText(id);
+        idNumber.setText(id);
+    }
+
+    private void setIvCount(String iv) {
+        ivCount.setText(iv);
+    }
+
+    private void setRxCount(String rx) {
+        rxCount.setText(rx);
+    }
+
+    @Override
+    public void onClick(View v) {
+        mClickListener.onItemClick(v, getAdapterPosition());
+    }
+
+    public interface ClickListener {
+        public void onItemClick(View view, int position);
     }
 
 }

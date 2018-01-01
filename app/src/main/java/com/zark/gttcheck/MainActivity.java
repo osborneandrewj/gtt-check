@@ -96,21 +96,16 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //mCasesDatabaseReference.push().setValue("hey");
                 GttCase newCase = new GttCase(244, 13, 77);
                 mCasesDatabaseReference.push().setValue(newCase);
-                //mCaseList.add(new GttCase(275, 13, 4));
-                //mAdapter.setNewDataSet(mCaseList);
             }
         });
 
         // Cases RecyclerView
-        //mCasesRecyclerView.setHasFixedSize(true);
         mCasesLayoutManager = new LinearLayoutManager(this);
-        mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
+        //mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCaseList = new ArrayList<>();
         mAdapter = new CaseOverviewAdapter(this, mCaseList, this);
-        //mCasesRecyclerView.setAdapter(mAdapter);
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -153,6 +148,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
+
     /**
      * When a RecyclerView item is clicked:
      * 1. Hide RecyclerView
@@ -163,12 +159,12 @@ public class MainActivity extends AppCompatActivity
         Timber.e("I've been clicked...");
 
         // Hide the RecyclerView
-        mCasesRecyclerView.setVisibility(View.GONE);
+        //mCasesRecyclerView.setVisibility(View.GONE);
 
         // Inflate fragment
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        CaseFragment caseFragment = new CaseFragment();
-        transaction.add(R.id.frag_container, caseFragment).addToBackStack("tag").commit();
+        //FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        //CaseFragment caseFragment = new CaseFragment();
+        //transaction.add(R.id.frag_container, caseFragment).addToBackStack("tag").commit();
     }
 
     @Override
@@ -220,7 +216,14 @@ public class MainActivity extends AppCompatActivity
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.case_overview_item_layout, parent, false);
 
-                return new GttCaseViewHolder(view);
+                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, new GttCaseViewHolder.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Timber.e("Hey, this is: %s", position);
+                    }
+                });
+
+                return gttCaseViewHolder;
             }
 
             @Override
@@ -239,6 +242,7 @@ public class MainActivity extends AppCompatActivity
         mCasesOververRVAdapter.startListening();
 
         mCasesRecyclerView.setAdapter(mCasesOververRVAdapter);
+        mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCasesRecyclerView.setVisibility(View.VISIBLE);
         Timber.e("Size of adapter: %s", mCasesOververRVAdapter.getItemCount());
     }
