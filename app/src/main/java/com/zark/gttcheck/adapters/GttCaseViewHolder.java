@@ -16,6 +16,11 @@ import butterknife.ButterKnife;
 
 public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+
+    public interface RecyclerViewClickListener {
+        void onClick(View view, int position);
+    }
+
     //@BindView(R.id.cv_case) ConstraintLayout mCaseLayout;
     //@BindView(R.id.tv_case_id) TextView mCaseIdNumber;
     //@BindView(R.id.tv_case_count_iv) TextView mIvCount;
@@ -25,9 +30,9 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.O
     public TextView rxCount;
 
     //private final View.OnClickListener mListener;
-    private GttCaseViewHolder.ClickListener mClickListener;
+    private RecyclerViewClickListener mClickListener;
 
-    public GttCaseViewHolder(final View view, GttCaseViewHolder.ClickListener listener) {
+    public GttCaseViewHolder(final View view, RecyclerViewClickListener listener) {
         super(view);
 
         //ButterKnife.bind(this, view);
@@ -58,11 +63,7 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.O
 
     @Override
     public void onClick(View v) {
-        mClickListener.onItemClick(v, getAdapterPosition());
-    }
-
-    public interface ClickListener {
-        public void onItemClick(View view, int position);
+        mClickListener.onClick(v, getAdapterPosition());
     }
 
 }

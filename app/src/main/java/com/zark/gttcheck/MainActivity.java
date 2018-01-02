@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private CaseOverviewAdapter mAdapter;
     private ArrayList<GttCase> mCaseList;
     private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
+    private GttCaseViewHolder.RecyclerViewClickListener mRecyclerViewClickListener;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -148,25 +149,6 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
-
-    /**
-     * When a RecyclerView item is clicked:
-     * 1. Hide RecyclerView
-     * 2. Inflate the fragment to a FrameLayout
-     */
-    @Override
-    public void onCaseClick() {
-        Timber.e("I've been clicked...");
-
-        // Hide the RecyclerView
-        //mCasesRecyclerView.setVisibility(View.GONE);
-
-        // Inflate fragment
-        //FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        //CaseFragment caseFragment = new CaseFragment();
-        //transaction.add(R.id.frag_container, caseFragment).addToBackStack("tag").commit();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -183,6 +165,11 @@ public class MainActivity extends AppCompatActivity
                 finish();
             }
         }
+    }
+
+    @Override
+    public void onCaseClick() {
+        // Do i need this anymore?
     }
 
     public void onSignedInInitialize() {
@@ -209,6 +196,21 @@ public class MainActivity extends AppCompatActivity
                 .setQuery(query, GttCase.class)
                 .build();
 
+        mRecyclerViewClickListener = new GttCaseViewHolder.RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Timber.e("Hey, %s", position);
+
+                mCasesRecyclerView.setVisibility(View.INVISIBLE);
+
+                CaseFragment fragment = new CaseFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.frag_container, fragment).addToBackStack("hey");
+                fragmentTransaction.commit();
+            }
+        };
+
         mCasesOververRVAdapter = new FirebaseRecyclerAdapter<GttCase,
                 GttCaseViewHolder>(options) {
             @Override
@@ -216,12 +218,14 @@ public class MainActivity extends AppCompatActivity
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.case_overview_item_layout, parent, false);
 
-                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, new GttCaseViewHolder.ClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Timber.e("Hey, this is: %s", position);
-                    }
-                });
+
+                /*
+                 * When a RecyclerView item is clicked:
+                 * 1. Hide RecyclerView
+                 * 2. Inflate the fragment to a FrameLayout
+                 */
+
+                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, mRecyclerViewClickListener);
 
                 return gttCaseViewHolder;
             }
