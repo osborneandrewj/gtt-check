@@ -97,8 +97,17 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GttCase newCase = new GttCase(244, 13, 77);
-                mCasesDatabaseReference.push().setValue(newCase);
+
+                //GttCase newCase = new GttCase(244, 13, 77);
+                //mCasesDatabaseReference.push().setValue(newCase);
+
+                // Hide the list of cases
+                mCasesRecyclerView.setVisibility(View.INVISIBLE);
+
+                AddCaseFragment fragment = new AddCaseFragment();
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.add(R.id.frag_container, fragment).addToBackStack("yo").commit();
             }
         });
 
