@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<GttCase> mCaseList;
     private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
     private GttCaseViewHolder.RecyclerViewClickListener mRecyclerViewClickListener;
+    private int mRVBackgroundColorCount = 0;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -82,13 +84,6 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
-        Timber.e("User ID: %s", userId);
-        mCasesDatabaseReference = mFirebaseDatabase.getReference()
-                .child("users")
-                .child(userId)
-                .child("cases");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -148,8 +143,12 @@ public class MainActivity extends AppCompatActivity
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        mCasesOververRVAdapter.stopListening();
-        //detachDatabaseReadListener();
+        if (mCasesOververRVAdapter != null) {
+            if (mCasesOververRVAdapter.hasObservers()) {
+                mCasesOververRVAdapter.stopListening();
+                //detachDatabaseReadListener();
+            }
+        }
     }
 
     @Override
@@ -195,6 +194,11 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
+        mCasesDatabaseReference = mFirebaseDatabase.getReference()
+                .child("users")
+                .child(userId)
+                .child("cases");
+
         Timber.e("User ID here is: %s", userId);
         Query query = mCasesDatabaseReference.limitToLast(50);
 
@@ -227,13 +231,6 @@ public class MainActivity extends AppCompatActivity
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.case_overview_item_layout, parent, false);
 
-
-                /*
-                 * When a RecyclerView item is clicked:
-                 * 1. Hide RecyclerView
-                 * 2. Inflate the fragment to a FrameLayout
-                 */
-
                 GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, mRecyclerViewClickListener);
 
                 return gttCaseViewHolder;
@@ -245,6 +242,18 @@ public class MainActivity extends AppCompatActivity
                     Timber.e("Binding!... %s", model.getIdNumber());
                     //holder.mCaseIdNumber.setText(model.getIdNumber());
                     //holder.rxCount.setText(model.getRxCount());
+
+                    // Set an alternating background color
+                    if (mRVBackgroundColorCount == 0) {
+                        holder.cardView.setCardBackgroundColor(ContextCompat
+                                .getColor(getApplicationContext(), R.color.colorCasesRVLavender));
+                        mRVBackgroundColorCount = 1;
+                    } else {
+                        holder.cardView.setCardBackgroundColor(ContextCompat
+                                .getColor(getApplicationContext(), R.color.colorCasesRVLightSteelBlue));
+                        mRVBackgroundColorCount = 0;
+                    }
+
                     holder.bind(model);
                 } else {
                     Timber.e("Not Binding...");

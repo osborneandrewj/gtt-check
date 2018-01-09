@@ -1,5 +1,6 @@
 package com.zark.gttcheck.adapters;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.O
     //@BindView(R.id.tv_case_id) TextView mCaseIdNumber;
     //@BindView(R.id.tv_case_count_iv) TextView mIvCount;
     //@BindView(R.id.tv_case_count_rx) TextView mRxCount;
+    public CardView cardView;
     public TextView idNumber;
     public TextView ivCount;
     public TextView rxCount;
@@ -36,6 +38,7 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.O
         super(view);
 
         //ButterKnife.bind(this, view);
+        cardView = view.findViewById(R.id.card_view_case);
         idNumber = view.findViewById(R.id.tv_case_id);
         ivCount = view.findViewById(R.id.tv_case_count_iv);
         rxCount = view.findViewById(R.id.tv_case_count_rx);

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#3a88b8</color>
+    <color name="colorPrimaryDark">#3d6493</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <!--Cases recyclerview-->
+    <color name="colorCasesRVLavender">#dfe8ef</color>
+    <color name="colorCasesRVLightSteelBlue">#a1cada</color>
+    <color name="colorCasesRVTextDarkLabel">#3d6493</color>
+    <color name="colorCasesRVTextLightLabel">#95aec7</color>
 </resources>

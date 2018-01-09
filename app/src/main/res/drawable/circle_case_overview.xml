@@ -5,7 +5,7 @@
 
     <stroke
         android:width="@dimen/circle_case_overview_stroke"
-        android:color="@color/colorAccent"/>
+        android:color="@color/colorCasesRVTextLightLabel"/>
 
     <size
         android:width="@dimen/circle_case_overview"
