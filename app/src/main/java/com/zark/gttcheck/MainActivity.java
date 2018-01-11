@@ -27,7 +27,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.zark.gttcheck.adapters.CaseOverviewAdapter;
+import com.zark.gttcheck.adapters.GttCaseOverviewAdapter;
 import com.zark.gttcheck.adapters.GttCaseViewHolder;
 import com.zark.gttcheck.models.GttCase;
 
@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
-        implements CaseOverviewAdapter.CaseOnClickHandler {
+        implements GttCaseOverviewAdapter.CaseOnClickHandler {
 
     private static final int RC_SIGN_IN = 1886;
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
-    private CaseOverviewAdapter mAdapter;
+    private GttCaseOverviewAdapter mAdapter;
     private ArrayList<GttCase> mCaseList;
     private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
     private GttCaseViewHolder.RecyclerViewClickListener mRecyclerViewClickListener;
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
 
         if (BuildConfig.DEBUG) {
@@ -93,9 +94,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                //GttCase newCase = new GttCase(244, 13, 77);
-                //mCasesDatabaseReference.push().setValue(newCase);
-
                 // Hide the list of cases
                 mCasesRecyclerView.setVisibility(View.INVISIBLE);
 
@@ -106,11 +104,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Cases RecyclerView
         mCasesLayoutManager = new LinearLayoutManager(this);
-        //mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCaseList = new ArrayList<>();
-        mAdapter = new CaseOverviewAdapter(this, mCaseList, this);
+        mAdapter = new GttCaseOverviewAdapter(this, mCaseList, this);
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -135,26 +131,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mAuthStateListener != null) {
-            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
-        if (mCasesOververRVAdapter != null) {
-            if (mCasesOververRVAdapter.hasObservers()) {
-                mCasesOververRVAdapter.stopListening();
-                //detachDatabaseReadListener();
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -199,10 +175,7 @@ public class MainActivity extends AppCompatActivity
                 .child(userId)
                 .child("cases");
 
-        Timber.e("User ID here is: %s", userId);
         Query query = mCasesDatabaseReference.limitToLast(50);
-
-        Timber.e("Getting references...");
 
         FirebaseRecyclerOptions<GttCase> options =
                 new FirebaseRecyclerOptions.Builder<GttCase>()
@@ -239,10 +212,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onBindViewHolder(GttCaseViewHolder holder, int position, GttCase model) {
                 if (model != null) {
-                    Timber.e("Binding!... %s", model.getIdNumber());
-                    //holder.mCaseIdNumber.setText(model.getIdNumber());
-                    //holder.rxCount.setText(model.getRxCount());
-
                     // Set an alternating background color
                     if (mRVBackgroundColorCount == 0) {
                         holder.cardView.setCardBackgroundColor(ContextCompat
@@ -269,9 +238,7 @@ public class MainActivity extends AppCompatActivity
         Timber.e("Size of adapter: %s", mCasesOververRVAdapter.getItemCount());
     }
 
-    public void detachDatabaseReadListener() {
 
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -313,5 +280,24 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+        if (mCasesOververRVAdapter != null) {
+            if (mCasesOververRVAdapter.hasObservers()) {
+                mCasesOververRVAdapter.stopListening();
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 }

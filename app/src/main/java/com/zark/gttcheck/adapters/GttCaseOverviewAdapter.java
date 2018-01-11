@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
  *
  */
 
-public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapter.ViewHolder> {
+public class GttCaseOverviewAdapter extends RecyclerView.Adapter<GttCaseOverviewAdapter.ViewHolder> {
 
     private ArrayList<GttCase> mDataset;
     private GttCase mCase;
@@ -40,8 +40,8 @@ public class CaseOverviewAdapter extends RecyclerView.Adapter<CaseOverviewAdapte
         }
     }
 
-    public CaseOverviewAdapter(Context context, ArrayList<GttCase> data,
-                               CaseOnClickHandler handler) {
+    public GttCaseOverviewAdapter(Context context, ArrayList<GttCase> data,
+                                  CaseOnClickHandler handler) {
         mLayoutInflater = LayoutInflater.from(context);
         mDataset = data;
         mClickHandler = handler;
