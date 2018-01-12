@@ -179,53 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 .setQuery(query, GttCase.class)
                 .build();
 
-        mOnCaseSelectedListener = new GttCaseViewHolder.OnCaseSelectedListener() {
-            @Override
-            public void onCaseClicked(View view, int position) {
-                Timber.e("Hey, I got clicked: %s", position);
-
-                mCasesRecyclerView.setVisibility(View.INVISIBLE);
-
-                CaseFragment fragment = new CaseFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frag_container, fragment).addToBackStack("hey");
-                fragmentTransaction.commit();
-            }
-        };
-
-        mCasesOververRVAdapter = new FirebaseRecyclerAdapter<GttCase,
-                GttCaseViewHolder>(options) {
-            @Override
-            public GttCaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.case_overview_item_layout, parent, false);
-
-                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, mOnCaseSelectedListener);
-
-                return gttCaseViewHolder;
-            }
-
-            @Override
-            protected void onBindViewHolder(GttCaseViewHolder holder, int position, GttCase model) {
-                if (model != null) {
-                    // Set an alternating background color
-                    if (mRVBackgroundColorCount == 0) {
-                        holder.cardView.setCardBackgroundColor(ContextCompat
-                                .getColor(getApplicationContext(), R.color.colorCasesRVLavender));
-                        mRVBackgroundColorCount = 1;
-                    } else {
-                        holder.cardView.setCardBackgroundColor(ContextCompat
-                                .getColor(getApplicationContext(), R.color.colorCasesRVLightSteelBlue));
-                        mRVBackgroundColorCount = 0;
-                    }
-
-                    holder.bind(model);
-                } else {
-                    Timber.e("Not Binding...");
-                }
-            }
-        };
+        mCasesOververRVAdapter = new
 
         mCasesOververRVAdapter.startListening();
 
