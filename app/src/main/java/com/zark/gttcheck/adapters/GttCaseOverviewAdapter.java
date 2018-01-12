@@ -22,10 +22,7 @@ import butterknife.ButterKnife;
 public class GttCaseOverviewAdapter extends RecyclerView.Adapter<GttCaseOverviewAdapter.ViewHolder> {
 
     private ArrayList<GttCase> mDataset;
-    private GttCase mCase;
     private LayoutInflater mLayoutInflater;
-    private Context mContext;
-    private final CaseOnClickHandler mClickHandler;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -40,16 +37,14 @@ public class GttCaseOverviewAdapter extends RecyclerView.Adapter<GttCaseOverview
         }
     }
 
-    public GttCaseOverviewAdapter(Context context, ArrayList<GttCase> data,
-                                  CaseOnClickHandler handler) {
+    public GttCaseOverviewAdapter(Context context, ArrayList<GttCase> data
+    ) {
         mLayoutInflater = LayoutInflater.from(context);
         mDataset = data;
-        mClickHandler = handler;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        mContext = parent.getContext();
         View view = mLayoutInflater.inflate(R.layout.case_overview_item_layout,
                 parent, false);
 
@@ -58,13 +53,6 @@ public class GttCaseOverviewAdapter extends RecyclerView.Adapter<GttCaseOverview
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
-        holder.mCaseLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mClickHandler.onCaseClick();
-            }
-        });
 
     }
 
@@ -79,9 +67,5 @@ public class GttCaseOverviewAdapter extends RecyclerView.Adapter<GttCaseOverview
     public void setNewDataSet(ArrayList<GttCase> newDataSet) {
         mDataset = newDataSet;
         notifyDataSetChanged();
-    }
-
-    public interface CaseOnClickHandler {
-        void onCaseClick();
     }
 }

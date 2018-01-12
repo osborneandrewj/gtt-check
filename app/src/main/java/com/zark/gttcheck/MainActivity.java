@@ -39,8 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity
-        implements GttCaseOverviewAdapter.CaseOnClickHandler {
+public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1886;
 
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     private GttCaseOverviewAdapter mAdapter;
     private ArrayList<GttCase> mCaseList;
     private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
-    private GttCaseViewHolder.RecyclerViewClickListener mRecyclerViewClickListener;
+    private GttCaseViewHolder.OnCaseSelectedListener mOnCaseSelectedListener;
     private int mRVBackgroundColorCount = 0;
 
     // Authentication providers
@@ -94,8 +93,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                // Hide the list of cases
-                mCasesRecyclerView.setVisibility(View.INVISIBLE);
+                hideGttCaseList();
 
                 AddCaseFragment fragment = new AddCaseFragment();
                 FragmentManager fm = getSupportFragmentManager();
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity
 
         mCasesLayoutManager = new LinearLayoutManager(this);
         mCaseList = new ArrayList<>();
-        mAdapter = new GttCaseOverviewAdapter(this, mCaseList, this);
+        //mAdapter = new GttCaseOverviewAdapter(this, mCaseList);
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -151,11 +149,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onCaseClick() {
-        // Do i need this anymore?
-    }
-
     public void onSignedInInitialize() {
         Timber.e("Initializing...");
         mCasesRecyclerView.setVisibility(View.VISIBLE);
@@ -163,6 +156,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onSignedOutHideUI() {
+        mCasesRecyclerView.setVisibility(View.GONE);
+    }
+
+    public void hideGttCaseList() {
         mCasesRecyclerView.setVisibility(View.GONE);
     }
 
@@ -182,10 +179,10 @@ public class MainActivity extends AppCompatActivity
                 .setQuery(query, GttCase.class)
                 .build();
 
-        mRecyclerViewClickListener = new GttCaseViewHolder.RecyclerViewClickListener() {
+        mOnCaseSelectedListener = new GttCaseViewHolder.OnCaseSelectedListener() {
             @Override
-            public void onClick(View view, int position) {
-                Timber.e("Hey, %s", position);
+            public void onCaseClicked(View view, int position) {
+                Timber.e("Hey, I got clicked: %s", position);
 
                 mCasesRecyclerView.setVisibility(View.INVISIBLE);
 
@@ -204,7 +201,7 @@ public class MainActivity extends AppCompatActivity
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.case_overview_item_layout, parent, false);
 
-                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, mRecyclerViewClickListener);
+                GttCaseViewHolder gttCaseViewHolder = new GttCaseViewHolder(view, mOnCaseSelectedListener);
 
                 return gttCaseViewHolder;
             }
@@ -235,10 +232,7 @@ public class MainActivity extends AppCompatActivity
         mCasesRecyclerView.setAdapter(mCasesOververRVAdapter);
         mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCasesRecyclerView.setVisibility(View.VISIBLE);
-        Timber.e("Size of adapter: %s", mCasesOververRVAdapter.getItemCount());
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -249,14 +243,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             return true;
         }
 

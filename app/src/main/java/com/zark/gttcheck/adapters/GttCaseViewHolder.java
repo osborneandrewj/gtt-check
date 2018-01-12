@@ -8,34 +8,26 @@ import android.widget.TextView;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.GttCase;
 
-import butterknife.ButterKnife;
-
 /**
  * Created by Osborne on 11/28/2017.
  *
  */
 
-public class GttCaseViewHolder extends RecyclerView.ViewHolder //implements View.OnClickListener
+public class GttCaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 {
-
-
-    public interface RecyclerViewClickListener {
-        void onClick(View view, int position);
+    // Container activity must contain this interface
+    public interface OnCaseSelectedListener {
+        void onCaseClicked(View view, int position);
     }
 
-    //@BindView(R.id.cv_case) ConstraintLayout mCaseLayout;
-    //@BindView(R.id.tv_case_id) TextView mCaseIdNumber;
-    //@BindView(R.id.tv_case_count_iv) TextView mIvCount;
-    //@BindView(R.id.tv_case_count_rx) TextView mRxCount;
     public CardView cardView;
     public TextView idNumber;
     public TextView ivCount;
     public TextView rxCount;
 
-    //private final View.OnClickListener mListener;
-    private RecyclerViewClickListener mClickListener;
+    private OnCaseSelectedListener mOnCaseSelectedListener;
 
-    public GttCaseViewHolder(final View view, RecyclerViewClickListener listener) {
+    public GttCaseViewHolder(final View view, OnCaseSelectedListener listener) {
         super(view);
 
         //ButterKnife.bind(this, view);
@@ -43,7 +35,7 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder //implements View
         idNumber = view.findViewById(R.id.tv_case_id);
         ivCount = view.findViewById(R.id.tv_case_count_iv);
         rxCount = view.findViewById(R.id.tv_case_count_rx);
-        mClickListener = listener;
+        mOnCaseSelectedListener = listener;
         view.setOnClickListener(this);
     }
 
@@ -65,9 +57,9 @@ public class GttCaseViewHolder extends RecyclerView.ViewHolder //implements View
         rxCount.setText(rx);
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        mClickListener.onClick(v, getAdapterPosition());
-//    }
+    @Override
+    public void onClick(View v) {
+        mOnCaseSelectedListener.onCaseClicked(v, getAdapterPosition());
+    }
 
 }
