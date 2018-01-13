@@ -6,32 +6,25 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.zark.gttcheck.adapters.GttCaseOverviewAdapter;
-import com.zark.gttcheck.adapters.GttCaseViewHolder;
+import com.zark.gttcheck.adapters.GttCaseListAdapter;
 import com.zark.gttcheck.models.GttCase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements GttCaseListAdapter.OnCaseSelectedListener{
 
     private static final int RC_SIGN_IN = 1886;
 
@@ -48,14 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mCasesDatabaseReference;
-    private ChildEventListener mCaseListener;
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
-    private GttCaseOverviewAdapter mAdapter;
-    private ArrayList<GttCase> mCaseList;
-    private FirebaseRecyclerAdapter<GttCase, GttCaseViewHolder> mCasesOververRVAdapter;
-    private GttCaseViewHolder.OnCaseSelectedListener mOnCaseSelectedListener;
+    private GttCaseListAdapter mAdapter;
     private int mRVBackgroundColorCount = 0;
 
     // Authentication providers
@@ -93,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                hideGttCaseList();
+                hideCaseList();
 
                 AddCaseFragment fragment = new AddCaseFragment();
                 FragmentManager fm = getSupportFragmentManager();
@@ -103,9 +93,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mCasesLayoutManager = new LinearLayoutManager(this);
-        mCaseList = new ArrayList<>();
-        //mAdapter = new GttCaseOverviewAdapter(this, mCaseList);
-
         mFragmentManager = getSupportFragmentManager();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -113,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    onSignedInInitialize();
                     // User is signed in
-                    Timber.d("User is signed in!");
+                    onSignedInInitialize();
+                    setupFirebaseAdapter();
                 } else {
                     onSignedOutHideUI();
 
@@ -150,16 +137,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSignedInInitialize() {
-        Timber.e("Initializing...");
         mCasesRecyclerView.setVisibility(View.VISIBLE);
-        setupFirebaseAdapter();
     }
 
     public void onSignedOutHideUI() {
         mCasesRecyclerView.setVisibility(View.GONE);
     }
 
-    public void hideGttCaseList() {
+    public void hideCaseList() {
         mCasesRecyclerView.setVisibility(View.GONE);
     }
 
@@ -179,13 +164,18 @@ public class MainActivity extends AppCompatActivity {
                 .setQuery(query, GttCase.class)
                 .build();
 
-        mCasesOververRVAdapter = new
+        mAdapter = new GttCaseListAdapter(options, this, this);
 
-        mCasesOververRVAdapter.startListening();
+        mAdapter.startListening();
 
-        mCasesRecyclerView.setAdapter(mCasesOververRVAdapter);
+        mCasesRecyclerView.setAdapter(mAdapter);
         mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCasesRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onCaseClicked(View view, int position) {
+        Timber.e("Case clicked! Case: %s", position);
     }
 
     @Override
@@ -231,9 +221,9 @@ public class MainActivity extends AppCompatActivity {
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        if (mCasesOververRVAdapter != null) {
-            if (mCasesOververRVAdapter.hasObservers()) {
-                mCasesOververRVAdapter.stopListening();
+        if (mAdapter != null) {
+            if (mAdapter.hasObservers()) {
+                mAdapter.stopListening();
             }
         }
     }
