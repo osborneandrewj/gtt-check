@@ -14,7 +14,6 @@ public class CaseDetailsTransition extends TransitionSet {
     public CaseDetailsTransition() {
         setOrdering(ORDERING_TOGETHER);
         addTransition(new ChangeBounds())
-                .addTransition(new ChangeTransform())
-                .addTransition(new ChangeImageTransform());
+                .addTransition(new ChangeTransform());
     }
 }

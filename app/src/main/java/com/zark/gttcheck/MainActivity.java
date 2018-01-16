@@ -6,14 +6,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.graphics.drawable.AnimationUtilsCompat;
+import android.support.transition.ChangeBounds;
 import android.support.transition.Fade;
+import android.support.transition.Slide;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -181,17 +184,29 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCaseClicked(View view, int position) {
-        Timber.e("Case clicked! Case: %s", position);
-
+        // Define common transition name
+        CardView cardView = findViewById(R.id.card_view_case);
+        cardView.setTransitionName("transitionName" + position);
         Bundle bundle = new Bundle();
         bundle.putString("transitionName", "transition" + position);
 
         CaseFragment caseFragment = new CaseFragment();
+
+        // Transition for entering fragment
+        Slide slideTransition = new Slide(Gravity.TOP);
+        slideTransition.setDuration(1000);
+
+        // Transition for shared element only
+        ChangeBounds changeBoundsTransition = new ChangeBounds();
+
+        // Hide RecyclerView
+        hideCaseList();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            caseFragment.setSharedElementEnterTransition(new CaseDetailsTransition());
-            caseFragment.setEnterTransition(new Fade());
+            caseFragment.setSharedElementEnterTransition(new ChangeBounds());
+            caseFragment.setEnterTransition(slideTransition);
             caseFragment.setExitTransition(new Fade());
-            caseFragment.setSharedElementReturnTransition(new CaseDetailsTransition());
+            caseFragment.setSharedElementReturnTransition(new ChangeBounds());
             caseFragment.setArguments(bundle);
         }
 
@@ -250,6 +265,7 @@ public class MainActivity extends AppCompatActivity
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStackImmediate();
             mCasesRecyclerView.setVisibility(View.VISIBLE);
+            runRecyclerLayoutAnimation(mCasesRecyclerView);
         } else {
             super.onBackPressed();
         }
