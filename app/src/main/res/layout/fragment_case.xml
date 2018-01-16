@@ -1,10 +1,117 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zark.gttcheck.CaseFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view_case_details"
+            android:transitionName="transition"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="0dp"
+            android:layout_height="@dimen/case_overview_height"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cv_case"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/case_overview_height"
+                android:background="?android:attr/selectableItemBackground">
+
+                <FrameLayout
+                    android:id="@+id/frame_rx"
+                    android:layout_width="@dimen/circle_case_overview"
+                    android:layout_height="@dimen/circle_case_overview"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/circle_case_overview"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/label_case_rx"
+                        android:textColor="@color/colorCasesRVTextLightLabel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_case_count_rx"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorCasesRVTextDarkLabel"
+                        tools:text="14" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/frame_iv"
+                    android:layout_width="@dimen/circle_case_overview"
+                    android:layout_height="@dimen/circle_case_overview"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/circle_case_overview"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/frame_rx"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tv_label_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/label_case_iv"
+                        android:textColor="@color/colorCasesRVTextLightLabel" />
+
+                    <TextView
+                        android:id="@+id/tv_case_count_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textColor="@color/colorCasesRVTextDarkLabel"
+                        tools:text="3" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/frame_id_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tv_case_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="274" />
+                </FrameLayout>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
     <TextView
         android:layout_width="match_parent"
@@ -13,4 +120,4 @@
         android:text="This is a case."
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-</FrameLayout>
+</RelativeLayout>

@@ -21,7 +21,7 @@ allprojects {
         jcenter()
     }
     ext {
-        // Firebase UI version.
+        // Firebase UI version
         // Note: This has a transitive dependency with FirebaseVersion (below).
         // See https://github.com/firebase/FirebaseUI-Android for further info.
         FirebaseUiVersion = "3.1.3"

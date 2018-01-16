@@ -1,9 +1,13 @@
 package com.zark.gttcheck;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.graphics.drawable.AnimationUtilsCompat;
+import android.support.transition.Fade;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -33,7 +39,7 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
-        implements GttCaseListAdapter.OnCaseSelectedListener{
+        implements GttCaseListAdapter.OnCaseSelectedListener {
 
     private static final int RC_SIGN_IN = 1886;
 
@@ -82,13 +88,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                hideCaseList();
-
-                AddCaseFragment fragment = new AddCaseFragment();
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction transaction = fm.beginTransaction();
-                transaction.add(R.id.frag_container, fragment).addToBackStack("yo").commit();
+                runRecyclerLayoutAnimation(mCasesRecyclerView);
+//                hideCaseList();
+//
+//                AddCaseFragment fragment = new AddCaseFragment();
+//                FragmentManager fm = getSupportFragmentManager();
+//                FragmentTransaction transaction = fm.beginTransaction();
+//                transaction.add(R.id.frag_container, fragment).addToBackStack("yo").commit();
             }
         });
 
@@ -105,14 +111,10 @@ public class MainActivity extends AppCompatActivity
                     setupFirebaseAdapter();
                 } else {
                     onSignedOutHideUI();
-
-                    Timber.e("User is not signed in. Starting login UI...");
-                    startActivityForResult(
-                            AuthUI.getInstance()
+                    startActivityForResult(AuthUI.getInstance()
                                     .createSignInIntentBuilder()
                                     .setAvailableProviders(providers)
-                                    .build(),
-                            RC_SIGN_IN);
+                                    .build(), RC_SIGN_IN);
                 }
             }
         };
@@ -171,11 +173,49 @@ public class MainActivity extends AppCompatActivity
         mCasesRecyclerView.setAdapter(mAdapter);
         mCasesRecyclerView.setLayoutManager(mCasesLayoutManager);
         mCasesRecyclerView.setVisibility(View.VISIBLE);
+
+        int animId = R.anim.layout_animation_fall_down;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, animId);
+        mCasesRecyclerView.setLayoutAnimation(animation);
     }
 
     @Override
     public void onCaseClicked(View view, int position) {
         Timber.e("Case clicked! Case: %s", position);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("transitionName", "transition" + position);
+
+        CaseFragment caseFragment = new CaseFragment();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            caseFragment.setSharedElementEnterTransition(new CaseDetailsTransition());
+            caseFragment.setEnterTransition(new Fade());
+            caseFragment.setExitTransition(new Fade());
+            caseFragment.setSharedElementReturnTransition(new CaseDetailsTransition());
+            caseFragment.setArguments(bundle);
+        }
+
+        this.getSupportFragmentManager()
+                .beginTransaction()
+                .addSharedElement(view.findViewById(R.id.card_view_case), "sharedCard")
+                .replace(R.id.frag_container, caseFragment)
+                .addToBackStack("heya")
+                .commit();
+    }
+
+    /**
+     * Test method
+     * TODO: Remove this method
+     */
+    private void runRecyclerLayoutAnimation(final RecyclerView recyclerView) {
+        Context context = recyclerView.getContext();
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context,
+                R.anim.layout_animation_fall_down);
+
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
+
     }
 
     @Override

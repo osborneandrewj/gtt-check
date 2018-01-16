@@ -1,6 +1,7 @@
 package com.zark.gttcheck.adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -20,12 +21,15 @@ import com.zark.gttcheck.models.GttCase;
  */
 
 public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
-        GttCase, GttCaseListAdapter.GttCaseViewHolder>{
+        GttCase, GttCaseListAdapter.GttCaseViewHolder> {
 
     // Container activity must contain this interface
     public interface OnCaseSelectedListener {
         void onCaseClicked(View view, int position);
     }
+
+    private Context mContext;
+    private OnCaseSelectedListener mListener;
 
     /**
      * ViewHolder for each case
@@ -46,9 +50,6 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
             rxCount = itemView.findViewById(R.id.tv_case_count_rx);
         }
     }
-
-    private Context mContext;
-    private OnCaseSelectedListener mListener;
 
     public GttCaseListAdapter(@NonNull FirebaseRecyclerOptions<GttCase> options,
                               Context context, OnCaseSelectedListener listener) {
@@ -80,6 +81,11 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
             holder.cardView.setBackgroundColor(
                     ContextCompat.getColor(mContext, R.color.colorCasesRVLavender));
         }
+
+        // Set a unique transition name for each item
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.cardView.setTransitionName("transition" + position);
+        }
     }
 
     @Override
@@ -87,9 +93,6 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.case_overview_item_layout, parent, false);
 
-        GttCaseViewHolder gttCaseViewHolder =
-                new GttCaseViewHolder(view);
-
-        return gttCaseViewHolder;
+        return new GttCaseViewHolder(view);
     }
 }
