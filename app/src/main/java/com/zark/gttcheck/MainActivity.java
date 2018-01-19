@@ -161,9 +161,7 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
-        mCasesDatabaseReference = mFirebaseDatabase.getReference()
-                .child("users")
-                .child(userId)
+        mCasesDatabaseReference = mFirebaseDatabase.getReference().child("users").child(userId)
                 .child("cases");
 
         Query query = mCasesDatabaseReference.limitToLast(50);

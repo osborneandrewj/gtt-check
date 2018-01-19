@@ -40,21 +40,14 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
      */
     static class GttCaseViewHolder extends RecyclerView.ViewHolder {
 
-        //public CardView cardView;
-        public TextView idNumber;
-        public TextView ivCount;
-        public TextView rxCount;
         @BindView(R.id.card_view_case) CardView cardView;
+        @BindView(R.id.tv_case_id) TextView idNumber;
+        @BindView(R.id.tv_case_count_iv) TextView ivCount;
+        @BindView(R.id.tv_case_count_rx) TextView rxCount;
 
         public GttCaseViewHolder(View itemView) {
             super(itemView);
-
-            ButterKnife.bind(itemView);
-
-            //cardView = itemView.findViewById(R.id.card_view_case);
-            idNumber = itemView.findViewById(R.id.tv_case_id);
-            ivCount = itemView.findViewById(R.id.tv_case_count_iv);
-            rxCount = itemView.findViewById(R.id.tv_case_count_rx);
+            ButterKnife.bind(this, itemView);
         }
     }
 
