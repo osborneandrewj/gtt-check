@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 runRecyclerLayoutAnimation(mCasesRecyclerView);
+
 //                hideCaseList();
 //
 //                AddCaseFragment fragment = new AddCaseFragment();
@@ -150,7 +152,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void hideCaseList() {
+        mCasesRecyclerView.animate().alpha(0.0f).setDuration(1000);
         mCasesRecyclerView.setVisibility(View.GONE);
+        mCasesRecyclerView.animate().alpha(1.0f);
     }
 
     public void setupFirebaseAdapter() {
@@ -185,12 +189,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCaseClicked(View view, int position) {
         // Define common transition name
-        CardView cardView = findViewById(R.id.card_view_case);
-        cardView.setTransitionName("transitionName" + position);
+        CardView cardView = view.findViewById(R.id.card_view_case);
+        String transitionName = "transitionName" + position;
+        cardView.setTransitionName(transitionName);
         Bundle bundle = new Bundle();
-        bundle.putString("transitionName", "transition" + position);
+        bundle.putString("transitionName", transitionName);
+        Timber.e("transitionName: %s", transitionName );
 
         CaseFragment caseFragment = new CaseFragment();
+        caseFragment.setArguments(bundle);
 
         // Transition for entering fragment
         Slide slideTransition = new Slide(Gravity.TOP);
@@ -207,12 +214,11 @@ public class MainActivity extends AppCompatActivity
             caseFragment.setEnterTransition(slideTransition);
             caseFragment.setExitTransition(new Fade());
             caseFragment.setSharedElementReturnTransition(new ChangeBounds());
-            caseFragment.setArguments(bundle);
         }
 
         this.getSupportFragmentManager()
                 .beginTransaction()
-                .addSharedElement(view.findViewById(R.id.card_view_case), "sharedCard")
+                .addSharedElement(cardView, transitionName)
                 .replace(R.id.frag_container, caseFragment)
                 .addToBackStack("heya")
                 .commit();

@@ -15,6 +15,10 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.GttCase;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Osborne on 1/10/18.
  *
@@ -36,15 +40,18 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
      */
     static class GttCaseViewHolder extends RecyclerView.ViewHolder {
 
-        public CardView cardView;
+        //public CardView cardView;
         public TextView idNumber;
         public TextView ivCount;
         public TextView rxCount;
+        @BindView(R.id.card_view_case) CardView cardView;
 
         public GttCaseViewHolder(View itemView) {
             super(itemView);
 
-            cardView = itemView.findViewById(R.id.card_view_case);
+            ButterKnife.bind(itemView);
+
+            //cardView = itemView.findViewById(R.id.card_view_case);
             idNumber = itemView.findViewById(R.id.tv_case_id);
             ivCount = itemView.findViewById(R.id.tv_case_count_iv);
             rxCount = itemView.findViewById(R.id.tv_case_count_rx);

@@ -3,11 +3,14 @@ package com.zark.gttcheck;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import timber.log.Timber;
 
 
 /**
@@ -27,13 +30,14 @@ public class CaseFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_case, container, false);
 
-        CardView headerCard = view.findViewById(R.id.card_view_case_details);
+        ConstraintLayout header = view.findViewById(R.id.header_case_details);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
             String transitionName = bundle.getString("transitionName");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                headerCard.setTransitionName(transitionName);
+                header.setTransitionName(transitionName);
+                Timber.e("Message received: %s", transitionName);
             }
         }
         // Inflate the layout for this fragment
