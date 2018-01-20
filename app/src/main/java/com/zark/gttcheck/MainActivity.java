@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
     private static final int RC_SIGN_IN = 1886;
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String USER_NAME_KEY = "userNameKey";
-    private static final String CASE_ID = "caseId";
+    private static final String CASE_REF = "caseRef";
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -91,7 +91,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                runRecyclerLayoutAnimation(mCasesRecyclerView);
+                GttCase newCase = new GttCase(233, 5, 8, null);
+                String newKey = mCasesDatabase.push().getKey();
+                newCase.setReference(newKey);
+                mCasesDatabase.child(newKey).setValue(newCase);
+
+                //runRecyclerLayoutAnimation(mCasesRecyclerView);
 
 //                hideCaseList();
 //
@@ -186,7 +191,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCaseClicked(View view, int position) {
+    public void onCaseClicked(View view, int position, String ref) {
         // Define common transition name
         CardView cardView = view.findViewById(R.id.card_view_case);
         String transitionName = "transitionName" + position;
@@ -199,6 +204,7 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putString(TRANSITION_NAME_KEY, transitionName);
         bundle.putString(USER_NAME_KEY, userId);
+        bundle.putString(CASE_REF, ref);
 
         CaseFragment caseFragment = new CaseFragment();
         caseFragment.setArguments(bundle);

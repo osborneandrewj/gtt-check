@@ -30,6 +30,7 @@ public class CaseFragment extends Fragment {
 
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String USER_NAME_KEY = "userNameKey";
+    private static final String CASE_REF = "caseRef";
 
     // IV Group RecyclerView
     private RecyclerView.LayoutManager mIvGroupLayoutManager;
@@ -37,6 +38,7 @@ public class CaseFragment extends Fragment {
     private DatabaseReference mIvGroupDatabase;
 
     private String mUserId;
+    private String mCaseRef;
 
     @BindView(R.id.header_case_details) ConstraintLayout mCaseHeader;
     @BindView(R.id.rv_iv_groups) RecyclerView mRecyclerView;
@@ -61,6 +63,7 @@ public class CaseFragment extends Fragment {
                 Timber.e("Message received: %s", transitionName);
             }
             mUserId = bundle.getString(USER_NAME_KEY);
+            mCaseRef = bundle.getString(CASE_REF);
         }
 
         // Make sure that Firebase has a value for the list of IV groups
@@ -68,8 +71,10 @@ public class CaseFragment extends Fragment {
                 .child("users")
                 .child(mUserId)
                 .child("cases")
-                .child("iv_group"); // Change this value
-        mIvGroupDatabase.setValue("Hey");
+                .child(mCaseRef);
+
+        mIvGroupDatabase.child("iv_group").setValue("Hey");
+
         // Inflate the layout for this fragment
         return view;
     }

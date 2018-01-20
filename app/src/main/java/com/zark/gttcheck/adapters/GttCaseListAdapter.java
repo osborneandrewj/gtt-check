@@ -29,7 +29,7 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
 
     // Container activity must contain this interface
     public interface OnCaseSelectedListener {
-        void onCaseClicked(View view, int position);
+        void onCaseClicked(View view, int position, String ref);
     }
 
     private Context mContext;
@@ -60,7 +60,7 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
 
     @Override
     protected void onBindViewHolder(@NonNull final GttCaseViewHolder holder,
-                                    int position, @NonNull GttCase model) {
+                                    int position, @NonNull final GttCase model) {
         holder.idNumber.setText(String.valueOf(model.getIdNumber()));
         holder.ivCount.setText(String.valueOf(model.getIvCount()));
         holder.rxCount.setText(String.valueOf(model.getRxCount()));
@@ -68,7 +68,7 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    mListener.onCaseClicked(view, holder.getAdapterPosition());
+                    mListener.onCaseClicked(view, holder.getAdapterPosition(), model.getReference());
                 }
             }
         });

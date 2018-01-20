@@ -6,4 +6,7 @@ package com.zark.gttcheck.models;
  */
 
 public class IvGroupRx {
+
+    private String name;
+
 }
