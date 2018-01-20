@@ -4,19 +4,26 @@ package com.zark.gttcheck;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.zark.gttcheck.adapters.IvGroupListAdapter;
+import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
+import com.zark.gttcheck.models.IvGroupRx;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,17 +38,23 @@ public class CaseFragment extends Fragment {
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String USER_NAME_KEY = "userNameKey";
     private static final String CASE_REF = "caseRef";
+    private static final String RX_COUNT_KEY = "rxCount";
+    private static String IV_GROUP_KEY = "ivGroupKey";
 
     // IV Group RecyclerView
     private RecyclerView.LayoutManager mIvGroupLayoutManager;
     private IvGroupListAdapter mAdapter;
-    private DatabaseReference mIvGroupDatabase;
+    private DatabaseReference mCaseDatabase;
 
     private String mUserId;
     private String mCaseRef;
 
     @BindView(R.id.header_case_details) ConstraintLayout mCaseHeader;
     @BindView(R.id.rv_iv_groups) RecyclerView mRecyclerView;
+    @BindView(R.id.tv_details_count_rx) TextView mRxCount;
+    @BindView(R.id.tv_details_count_iv) TextView mIvCount;
+    @BindView(R.id.tv_details_id) TextView mCaseId;
+    @BindView(R.id.fab_case) FloatingActionButton mFab;
 
     public CaseFragment() {
         // Required empty public constructor
@@ -67,13 +80,39 @@ public class CaseFragment extends Fragment {
         }
 
         // Make sure that Firebase has a value for the list of IV groups
-        mIvGroupDatabase = FirebaseDatabase.getInstance().getReference()
+        mCaseDatabase = FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(mUserId)
                 .child("cases")
                 .child(mCaseRef);
 
-        mIvGroupDatabase.child("iv_group").setValue("Hey");
+        mCaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GttCase currentCase = dataSnapshot.getValue(GttCase.class);
+                mRxCount.setText(String.valueOf(currentCase.getRxCount()));
+                mIvCount.setText(String.valueOf(currentCase.getIvCount()));
+                mCaseId.setText(String.valueOf(currentCase.getIdNumber()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        Timber.e("RxCount: %s", mCaseDatabase.child(RX_COUNT_KEY));
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true);
+                IV_GROUP_KEY = mCaseDatabase.child("iv_groups").push().getKey();
+                IvGroup newIv = new IvGroup("One", IV_GROUP_KEY);
+                mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newMed);
+            }
+        });
+
+        startRecyclerView();
 
         // Inflate the layout for this fragment
         return view;
@@ -81,7 +120,9 @@ public class CaseFragment extends Fragment {
 
     private void startRecyclerView() {
 
-        Query query = mIvGroupDatabase.limitToLast(50);
+        DatabaseReference ivGroupsDatabase = mCaseDatabase.child("iv_groups");
+
+        Query query = ivGroupsDatabase.limitToLast(50);
 
         FirebaseRecyclerOptions<IvGroup> options =
                 new FirebaseRecyclerOptions.Builder<IvGroup>()
@@ -95,4 +136,13 @@ public class CaseFragment extends Fragment {
         mRecyclerView.setLayoutManager(mIvGroupLayoutManager);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mAdapter != null) {
+            if (mAdapter.hasObservers()) {
+                mAdapter.stopListening();
+            }
+        }
+    }
 }

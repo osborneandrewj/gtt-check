@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity
         mCasesRecyclerView.animate().alpha(0.0f).setDuration(1000);
         mCasesRecyclerView.setVisibility(View.GONE);
         mCasesRecyclerView.animate().alpha(1.0f);
+        fab.setVisibility(View.GONE);
     }
 
     public void setupFirebaseAdapter() {
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity
 
         // Transition for entering fragment
         Slide slideTransition = new Slide(Gravity.TOP);
-        slideTransition.setDuration(1000);
+        slideTransition.setDuration(800);
 
         // Transition for shared element only
         ChangeBounds changeBoundsTransition = new ChangeBounds();
@@ -281,6 +282,7 @@ public class MainActivity extends AppCompatActivity
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStackImmediate();
             mCasesRecyclerView.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.VISIBLE);
             runRecyclerLayoutAnimation(mCasesRecyclerView);
         } else {
             super.onBackPressed();

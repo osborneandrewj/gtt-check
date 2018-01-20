@@ -8,13 +8,15 @@ package com.zark.gttcheck.models;
 public class IvGroup {
 
     private String name;
+    private String reference;
 
     public IvGroup() {
 
     }
 
-    public IvGroup(String name) {
+    public IvGroup(String name, String reference) {
         this.name = name;
+        this.reference = reference;
     }
 
     public String getName() {
@@ -23,5 +25,13 @@ public class IvGroup {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 }
