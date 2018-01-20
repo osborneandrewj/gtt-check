@@ -10,4 +10,11 @@
     <color name="colorCasesRVLightSteelBlue">#a1cada</color>
     <color name="colorCasesRVTextDarkLabel">#3d6493</color>
     <color name="colorCasesRVTextLightLabel">#95aec7</color>
+
+    <!--IV group colors-->
+    <color name="colorIvGroupHeaderBackground">#dde8f0</color>
+    <color name="colorIvGroupBackground">#8fcaeb</color>
+    <color name="colorIvGroupCircleBackground">#4686b5</color>
+    <color name="colorIvGroupLabel">#d7e5f0</color>
+    <color name="colorIvGroupListViewBackground">#d7e5f0</color>
 </resources>

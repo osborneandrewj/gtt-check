@@ -4,4 +4,8 @@
     <dimen name="circle_case_overview">75dp</dimen>
     <dimen name="circle_case_overview_stroke">1dp</dimen>
     <dimen name="case_overview_height">100dp</dimen>
+
+    <!--IV Group dimensions-->
+    <dimen name="circle_iv_group_height">25dp</dimen>
+    <dimen name="iv_group_min_height">50dp</dimen>
 </resources>

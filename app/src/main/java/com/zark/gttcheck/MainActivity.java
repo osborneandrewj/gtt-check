@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.transition.ChangeBounds;
 import android.support.transition.Fade;
 import android.support.transition.Slide;
-import android.support.transition.TransitionInflater;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -45,17 +44,18 @@ public class MainActivity extends AppCompatActivity
         implements GttCaseListAdapter.OnCaseSelectedListener {
 
     private static final int RC_SIGN_IN = 1886;
+    private static final String TRANSITION_NAME_KEY = "transitionName";
+    private static final String USER_NAME_KEY = "userNameKey";
+    private static final String CASE_ID = "caseId";
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mCasesDatabaseReference;
+    private DatabaseReference mCasesDatabase;
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
     private GttCaseListAdapter mAdapter;
-    private int mRVBackgroundColorCount = 0;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -161,10 +160,12 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
-        mCasesDatabaseReference = mFirebaseDatabase.getReference().child("users").child(userId)
+        mCasesDatabase = FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(userId)
                 .child("cases");
 
-        Query query = mCasesDatabaseReference.limitToLast(50);
+        Query query = mCasesDatabase.limitToLast(50);
 
         FirebaseRecyclerOptions<GttCase> options =
                 new FirebaseRecyclerOptions.Builder<GttCase>()
@@ -190,9 +191,14 @@ public class MainActivity extends AppCompatActivity
         CardView cardView = view.findViewById(R.id.card_view_case);
         String transitionName = "transitionName" + position;
         cardView.setTransitionName(transitionName);
+
+        // Get User Name
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+
         Bundle bundle = new Bundle();
-        bundle.putString("transitionName", transitionName);
-        Timber.e("transitionName: %s", transitionName );
+        bundle.putString(TRANSITION_NAME_KEY, transitionName);
+        bundle.putString(USER_NAME_KEY, userId);
 
         CaseFragment caseFragment = new CaseFragment();
         caseFragment.setArguments(bundle);

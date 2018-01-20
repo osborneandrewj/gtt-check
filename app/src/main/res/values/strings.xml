@@ -9,6 +9,9 @@
     <string name="label_case_iv">IV</string>
     <string name="label_case_rx">Rx</string>
 
+    <!--IV Group-->
+    <string name="label_iv_group">IV</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
