@@ -31,7 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.zark.gttcheck.adapters.GttCaseListAdapter;
+import com.zark.gttcheck.adapters.IvGroupListAdapter;
 import com.zark.gttcheck.models.GttCase;
+import com.zark.gttcheck.models.IvGroup;
 
 import java.util.Arrays;
 import java.util.List;

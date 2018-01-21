@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -33,7 +34,7 @@ import timber.log.Timber;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CaseFragment extends Fragment {
+public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGroupSelectedListener {
 
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String USER_NAME_KEY = "userNameKey";
@@ -103,9 +104,11 @@ public class CaseFragment extends Fragment {
         Timber.e("RxCount: %s", mCaseDatabase.child(RX_COUNT_KEY));
 
         mFab.setOnClickListener(new View.OnClickListener() {
+
+            //TODO: Fix this nonsense
             @Override
             public void onClick(View view) {
-                IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true);
+                IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true, null);
                 IV_GROUP_KEY = mCaseDatabase.child("iv_groups").push().getKey();
                 IvGroup newIv = new IvGroup("One", IV_GROUP_KEY);
                 mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newMed);
@@ -129,11 +132,16 @@ public class CaseFragment extends Fragment {
                 .setQuery(query, IvGroup.class)
                 .build();
 
-        mAdapter = new IvGroupListAdapter(options);
+        mAdapter = new IvGroupListAdapter(options, this);
         mAdapter.startListening();
         mRecyclerView.setAdapter(mAdapter);
         mIvGroupLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mIvGroupLayoutManager);
+    }
+
+    @Override
+    public void onIvGroupSelected(View view, int position) {
+        //Toast.makeText(getContext(), "Hey", Toast.LENGTH_SHORT).show();
     }
 
     @Override
