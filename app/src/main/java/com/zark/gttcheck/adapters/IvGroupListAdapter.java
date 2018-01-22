@@ -1,23 +1,26 @@
 package com.zark.gttcheck.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.Adapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.IvGroup;
-import com.zark.gttcheck.models.IvGroupRx;
+import com.zark.gttcheck.models.Rx;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * Created by Osborne on 1/19/2018.
@@ -32,6 +35,7 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
         void onIvGroupSelected(View view, int position);
     }
 
+    private Context mContext;
     private OnIvGroupSelectedListener mListener;
 
     /**
@@ -39,7 +43,8 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
      */
     static class IvGroupListAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.lv_iv_group) ListView ivGroup;
+        @BindView(R.id.card_view_iv_group) CardView cardView;
+        @BindView(R.id.lv_iv_group) ListView listView;
 
         public IvGroupListAdapterViewHolder(View itemView) {
             super(itemView);
@@ -47,27 +52,27 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
         }
     }
 
-    public IvGroupListAdapter(@NonNull FirebaseRecyclerOptions<IvGroup> options,
+    public IvGroupListAdapter(Context context, @NonNull FirebaseRecyclerOptions<IvGroup> options,
                               OnIvGroupSelectedListener listener) {
         super(options);
+        mContext = context;
         mListener = listener;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder, final int position, @NonNull IvGroup model) {
 
-        // Nothing to bind yet
+        // Set a list of medications for each IV group
+        ArrayList<Rx> rxList = new ArrayList<>(model.getRxAttached());
+        RxAdapter rxAdapter = new RxAdapter(mContext, position, rxList);
+        holder.listView.setAdapter(rxAdapter);
 
-        holder.ivGroup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Timber.e("Hey!");
-                if (mListener != null) {
-                    mListener.onIvGroupSelected(view, holder.getAdapterPosition());
-                }
+            public void onClick(View view) {
+                mListener.onIvGroupSelected(view, holder.getAdapterPosition());
             }
         });
-
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.zark.gttcheck.models;
 
+import java.util.ArrayList;
+
 /**
  * Created by Osborne on 1/19/2018.
  *
@@ -10,6 +12,7 @@ public class IvGroup {
     private String name;
     private String reference;
     private Boolean central;
+    private ArrayList<Rx> rxAttached;
 
     public IvGroup() {
 
@@ -48,5 +51,13 @@ public class IvGroup {
 
     public void setCentral(Boolean central) {
         this.central = central;
+    }
+
+    public ArrayList<Rx> getRxAttached() {
+        return rxAttached;
+    }
+
+    public void setRxAttached(ArrayList<Rx> rxAttached) {
+        this.rxAttached = rxAttached;
     }
 }

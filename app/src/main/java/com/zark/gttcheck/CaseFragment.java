@@ -11,9 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseListOptions;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,9 +23,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.zark.gttcheck.adapters.IvGroupListAdapter;
+import com.zark.gttcheck.adapters.RxListAdapter;
 import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
-import com.zark.gttcheck.models.IvGroupRx;
+import com.zark.gttcheck.models.Rx;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -110,10 +114,18 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
             //TODO: Fix this nonsense
             @Override
             public void onClick(View view) {
-                //IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true, null);
 
+                // List of medications
+                Rx newRx = new Rx("Medication", false);
+                ArrayList<Rx> list = new ArrayList<>();
+                list.add(newRx);
+                list.add(newRx);
+                list.add(newRx);
+
+                // Create a new IV group
                 IV_GROUP_KEY = mCaseDatabase.child("iv_groups").push().getKey();
-                IvGroup newIv = new IvGroup("One", IV_GROUP_KEY);
+                IvGroup newIv = new IvGroup("New IV", IV_GROUP_KEY, false);
+                newIv.setRxAttached(list);
                 mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newIv);
             }
         });
@@ -135,7 +147,7 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
                 .setQuery(query, IvGroup.class)
                 .build();
 
-        mAdapter = new IvGroupListAdapter(options, this);
+        mAdapter = new IvGroupListAdapter(getContext(), options, this);
         mAdapter.startListening();
         mRecyclerView.setAdapter(mAdapter);
         mIvGroupLayoutManager = new LinearLayoutManager(getContext());
@@ -144,8 +156,7 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
 
     @Override
     public void onIvGroupSelected(View view, int position) {
-        //Toast.makeText(getContext(), "Hey", Toast.LENGTH_SHORT).show();
-        Timber.e("From the case...");
+        Timber.e("From the case...%s", position);
     }
 
     @Override

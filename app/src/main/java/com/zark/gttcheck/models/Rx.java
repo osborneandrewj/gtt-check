@@ -7,16 +7,19 @@ import android.support.annotation.Nullable;
  *
  */
 
-public class IvGroupRx {
+public class Rx {
 
     private String name;
     private Boolean centralRequired;
     private String reference;
 
-    public IvGroupRx(String name, Boolean centralRequired, String reference) {
+    public Rx() {
+        // Empty constructor used by Firebase
+    }
+
+    public Rx(String name, Boolean centralRequired) {
         this.name = name;
         this.centralRequired = centralRequired;
-        this.reference = reference;
     }
 
     public String getName() {
