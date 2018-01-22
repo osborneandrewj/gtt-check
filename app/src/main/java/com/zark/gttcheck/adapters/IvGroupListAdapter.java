@@ -61,7 +61,10 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
         holder.ivGroup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                Timber.e("Hey!");
+                if (mListener != null) {
+                    mListener.onIvGroupSelected(view, holder.getAdapterPosition());
+                }
             }
         });
 

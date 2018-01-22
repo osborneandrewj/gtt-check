@@ -9,6 +9,7 @@ public class IvGroup {
 
     private String name;
     private String reference;
+    private Boolean central;
 
     public IvGroup() {
 
@@ -17,6 +18,12 @@ public class IvGroup {
     public IvGroup(String name, String reference) {
         this.name = name;
         this.reference = reference;
+    }
+
+    public IvGroup(String name, String reference, Boolean central) {
+        this.name = name;
+        this.reference = reference;
+        this.central = central;
     }
 
     public String getName() {
@@ -33,5 +40,13 @@ public class IvGroup {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public Boolean getCentral() {
+        return central;
+    }
+
+    public void setCentral(Boolean central) {
+        this.central = central;
     }
 }

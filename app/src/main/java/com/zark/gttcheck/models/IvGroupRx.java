@@ -10,12 +10,12 @@ import android.support.annotation.Nullable;
 public class IvGroupRx {
 
     private String name;
-    private Boolean central;
+    private Boolean centralRequired;
     private String reference;
 
-    public IvGroupRx(String name, Boolean central, @Nullable String reference) {
+    public IvGroupRx(String name, Boolean centralRequired, String reference) {
         this.name = name;
-        this.central = central;
+        this.centralRequired = centralRequired;
         this.reference = reference;
     }
 
@@ -27,12 +27,12 @@ public class IvGroupRx {
         this.name = name;
     }
 
-    public Boolean getCentral() {
-        return central;
+    public Boolean getCentralRequired() {
+        return centralRequired;
     }
 
-    public void setCentral(Boolean central) {
-        this.central = central;
+    public void setCentralRequired(Boolean centralRequired) {
+        this.centralRequired = centralRequired;
     }
 
     public String getReference() {

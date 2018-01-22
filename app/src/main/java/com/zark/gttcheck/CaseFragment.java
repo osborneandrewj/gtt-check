@@ -87,6 +87,8 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
                 .child("cases")
                 .child(mCaseRef);
 
+        // Add data to header once
+        // Note: This does not update dynamically
         mCaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,10 +110,11 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
             //TODO: Fix this nonsense
             @Override
             public void onClick(View view) {
-                IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true, null);
+                //IvGroupRx newMed = new IvGroupRx("SomethingOrRather", true, null);
+
                 IV_GROUP_KEY = mCaseDatabase.child("iv_groups").push().getKey();
                 IvGroup newIv = new IvGroup("One", IV_GROUP_KEY);
-                mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newMed);
+                mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newIv);
             }
         });
 
@@ -142,6 +145,7 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
     @Override
     public void onIvGroupSelected(View view, int position) {
         //Toast.makeText(getContext(), "Hey", Toast.LENGTH_SHORT).show();
+        Timber.e("From the case...");
     }
 
     @Override
