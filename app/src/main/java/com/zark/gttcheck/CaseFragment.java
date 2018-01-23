@@ -11,10 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseListOptions;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,8 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.zark.gttcheck.adapters.IvGroupListAdapter;
-import com.zark.gttcheck.adapters.RxListAdapter;
+import com.zark.gttcheck.adapters.IvGroupRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
@@ -38,7 +35,7 @@ import timber.log.Timber;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGroupSelectedListener {
+public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnIvGroupSelectedListener {
 
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String USER_NAME_KEY = "userNameKey";
@@ -48,7 +45,7 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
 
     // IV Group RecyclerView
     private RecyclerView.LayoutManager mIvGroupLayoutManager;
-    private IvGroupListAdapter mAdapter;
+    private IvGroupRecyclerAdapter mAdapter;
     private DatabaseReference mCaseDatabase;
 
     private String mUserId;
@@ -107,7 +104,6 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
 
             }
         });
-        Timber.e("RxCount: %s", mCaseDatabase.child(RX_COUNT_KEY));
 
         mFab.setOnClickListener(new View.OnClickListener() {
 
@@ -147,7 +143,7 @@ public class CaseFragment extends Fragment implements IvGroupListAdapter.OnIvGro
                 .setQuery(query, IvGroup.class)
                 .build();
 
-        mAdapter = new IvGroupListAdapter(getContext(), options, this);
+        mAdapter = new IvGroupRecyclerAdapter(getContext(), options, this);
         mAdapter.startListening();
         mRecyclerView.setAdapter(mAdapter);
         mIvGroupLayoutManager = new LinearLayoutManager(getContext());

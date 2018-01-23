@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -16,8 +16,9 @@ import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
 
+import net.cachapa.expandablelayout.ExpandableLayout;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,8 +28,8 @@ import butterknife.ButterKnife;
  *
  */
 
-public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
-        IvGroupListAdapter.IvGroupListAdapterViewHolder> {
+public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
+        IvGroupRecyclerAdapter.IvGroupListAdapterViewHolder> {
 
     // Container activity must contain this interface
     public interface OnIvGroupSelectedListener {
@@ -44,7 +45,8 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
     static class IvGroupListAdapterViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.card_view_iv_group) CardView cardView;
-        @BindView(R.id.lv_iv_group) ListView listView;
+        @BindView(R.id.rx_list) LinearLayout rxList;
+        @BindView(R.id.rv_expandable) ExpandableLayout expandMenu;
 
         public IvGroupListAdapterViewHolder(View itemView) {
             super(itemView);
@@ -52,8 +54,8 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
         }
     }
 
-    public IvGroupListAdapter(Context context, @NonNull FirebaseRecyclerOptions<IvGroup> options,
-                              OnIvGroupSelectedListener listener) {
+    public IvGroupRecyclerAdapter(Context context, @NonNull FirebaseRecyclerOptions<IvGroup> options,
+                                  OnIvGroupSelectedListener listener) {
         super(options);
         mContext = context;
         mListener = listener;
@@ -62,14 +64,20 @@ public class IvGroupListAdapter extends FirebaseRecyclerAdapter<IvGroup,
     @Override
     protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder, final int position, @NonNull IvGroup model) {
 
-        // Set a list of medications for each IV group
-        ArrayList<Rx> rxList = new ArrayList<>(model.getRxAttached());
-        RxAdapter rxAdapter = new RxAdapter(mContext, position, rxList);
-        holder.listView.setAdapter(rxAdapter);
+        // Set a list of medications associated with this particular IV group
+        ArrayList<Rx> rxArrayList = new ArrayList<>(model.getRxAttached());
+        for (Rx currentRx : rxArrayList) {
+            View view  = LayoutInflater.from(mContext).inflate(R.layout.rx_layout, null);
+            TextView rxNameTextView = view.findViewById(R.id.rx_name);
+            rxNameTextView.setText(currentRx.getName());
+            holder.rxList.addView(view);
+        }
 
+        // Expand when clicked
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.expandMenu.toggle();
                 mListener.onIvGroupSelected(view, holder.getAdapterPosition());
             }
         });

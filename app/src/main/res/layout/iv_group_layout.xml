@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="?android:selectableItemBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
     android:padding="8dp">
 
     <android.support.v7.widget.CardView
@@ -14,49 +14,75 @@
         app:cardBackgroundColor="@color/colorIvGroupBackground"
         app:cardCornerRadius="4dp">
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackground"
-            android:minHeight="@dimen/iv_group_min_height">
+            android:orientation="vertical">
 
-
-            <FrameLayout
-                android:id="@+id/frameLayout"
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/circle_iv_group"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:background="?android:selectableItemBackground"
+                android:minHeight="@dimen/iv_group_min_height">
 
-                <TextView
-                    android:id="@+id/textView"
+
+                <FrameLayout
+                    android:id="@+id/frameLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/label_iv_group"
-                    android:textColor="@color/colorIvGroupLabel" />
-            </FrameLayout>
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/circle_iv_group"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            <ListView
-                android:id="@+id/lv_iv_group"
-                android:layout_width="200dp"
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/label_iv_group"
+                        android:textColor="@color/colorIvGroupLabel" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/rx_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/frameLayout"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </LinearLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <net.cachapa.expandablelayout.ExpandableLayout
+                android:id="@+id/rv_expandable"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="8dp"
-                android:minHeight="20dp"
-                android:background="@color/colorIvGroupListViewBackground"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/frameLayout"
-                app:layout_constraintTop_toTopOf="parent" />
-        </android.support.constraint.ConstraintLayout>
+                android:layout_marginStart="8dp"
+                app:el_duration="500"
+                app:el_expanded="false"
+                app:el_parallax="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="Hello!" />
+
+            </net.cachapa.expandablelayout.ExpandableLayout>
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 
