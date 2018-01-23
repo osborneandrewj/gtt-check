@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <stroke
+        android:width="@dimen/circle_case_overview_stroke"
+        android:color="@color/colorCasesRVTextLightLabel"/>
+
+    <solid
+        android:color="@color/fui_transparent" />
+
+    <corners
+        android:radius="4dp" />
+
+</shape>
