@@ -1,11 +1,13 @@
 package com.zark.gttcheck;
 
 
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,6 +44,7 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
     private static final String CASE_REF = "caseRef";
     private static final String RX_COUNT_KEY = "rxCount";
     private static String IV_GROUP_KEY = "ivGroupKey";
+    private Boolean mIsFabFocused = true;
 
     // IV Group RecyclerView
     private RecyclerView.LayoutManager mIvGroupLayoutManager;
@@ -152,7 +155,15 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
 
     @Override
     public void onIvGroupSelected(View view, int position) {
-        Timber.e("From the case...%s", position);
+        if (mIsFabFocused) {
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat
+                    .getColor(getContext(), R.color.colorCaseFragFabDeselected)));
+            mIsFabFocused = false;
+        } else {
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat
+                    .getColor(getContext(), R.color.colorAccent)));
+            mIsFabFocused = true;
+        }
     }
 
     @Override

@@ -17,4 +17,7 @@
     <color name="colorIvGroupCircleBackground">#4686b5</color>
     <color name="colorIvGroupLabel">#d7e5f0</color>
     <color name="colorIvGroupListViewBackground">#d7e5f0</color>
+
+    <!--Detail Fragment-->
+    <color name="colorCaseFragFabDeselected">#ffffff</color>
 </resources>

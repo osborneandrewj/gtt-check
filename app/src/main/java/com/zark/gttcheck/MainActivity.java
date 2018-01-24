@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
 
         // Transition for entering fragment
         Slide slideTransition = new Slide(Gravity.TOP);
-        slideTransition.setDuration(800);
+        slideTransition.setDuration(500);
 
         // Transition for shared element only
         ChangeBounds changeBoundsTransition = new ChangeBounds();

@@ -78,6 +78,7 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
             @Override
             public void onClick(View view) {
                 holder.expandMenu.toggle();
+                //holder.cardView.setCardElevation(8);
                 mListener.onIvGroupSelected(view, holder.getAdapterPosition());
             }
         });
