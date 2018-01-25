@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.zark.gttcheck.adapters.GttCaseListAdapterOld;
 import com.zark.gttcheck.adapters.GttCaseRecyclerAdapter;
@@ -94,7 +95,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                mCasesDatabase.collection("users").document()
+                GttCase newCase = new GttCase(233, 5, 8, null);
+
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                String userId = currentUser.getUid();
+                DocumentReference newCaseRef = mCasesDatabase.collection("users")
+                        .document(userId)
+                        .collection("cases")
+                        .document();
+                newCase.setReference(newCaseRef.getId());
+                mCasesDatabase.collection("users")
+                        .document(userId).collection("cases").document(newCaseRef.getId()).set(newCase);
+
 
 //                GttCase newCase = new GttCase(233, 5, 8, null);
 //                String newKey = mCasesDatabase.push().getKey();

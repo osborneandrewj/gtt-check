@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
@@ -29,7 +31,7 @@ import timber.log.Timber;
  *
  */
 
-public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
+public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
         IvGroupRecyclerAdapter.IvGroupListAdapterViewHolder> {
 
     // Container activity must contain this interface
@@ -59,7 +61,7 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
         }
     }
 
-    public IvGroupRecyclerAdapter(Context context, @NonNull FirebaseRecyclerOptions<IvGroup> options,
+    public IvGroupRecyclerAdapter(Context context, @NonNull FirestoreRecyclerOptions<IvGroup> options,
                                   OnIvGroupSelectedListener listener) {
         super(options);
         mContext = context;

@@ -18,6 +18,7 @@ import com.zark.gttcheck.models.GttCase;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by Osborne on 1/24/2018.
@@ -72,6 +73,8 @@ public class GttCaseRecyclerAdapter
                 }
             }
         });
+
+        Timber.e("position: %s", holder.getAdapterPosition());
 
         // Set an alternating CardView background color
         if (holder.getAdapterPosition() % 2 == 0) {
