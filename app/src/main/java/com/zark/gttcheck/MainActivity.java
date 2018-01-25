@@ -36,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.zark.gttcheck.adapters.GttCaseListAdapterOld;
 import com.zark.gttcheck.adapters.GttCaseRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
+import com.zark.gttcheck.utilities.MyDatabaseUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,8 +55,8 @@ public class MainActivity extends AppCompatActivity
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
+    private String mUserId;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseFirestore mCasesDatabase;
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,30 +99,12 @@ public class MainActivity extends AppCompatActivity
 
                 GttCase newCase = new GttCase(233, 5, 8, null);
 
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                String userId = currentUser.getUid();
-                DocumentReference newCaseRef = mCasesDatabase.collection("users")
-                        .document(userId)
-                        .collection("cases")
-                        .document();
+                DocumentReference newCaseRef = MyDatabaseUtils.getNewCaseDbReference(mUserId);
                 newCase.setReference(newCaseRef.getId());
-                mCasesDatabase.collection("users")
-                        .document(userId).collection("cases").document(newCaseRef.getId()).set(newCase);
-
-
-//                GttCase newCase = new GttCase(233, 5, 8, null);
-//                String newKey = mCasesDatabase.push().getKey();
-//                newCase.setReference(newKey);
-//                mCasesDatabase.child(newKey).setValue(newCase);
-
-                //runRecyclerLayoutAnimation(mCasesRecyclerView);
-
-//                hideCaseList();
-//
-//                AddCaseFragment fragment = new AddCaseFragment();
-//                FragmentManager fm = getSupportFragmentManager();
-//                FragmentTransaction transaction = fm.beginTransaction();
-//                transaction.add(R.id.frag_container, fragment).addToBackStack("yo").commit();
+                MyDatabaseUtils.getUserDbReference(mUserId)
+                        .collection(MyDatabaseUtils.CASE_DIRECTORY)
+                        .document(newCaseRef.getId())
+                        .set(newCase);
             }
         });
 
@@ -181,31 +165,12 @@ public class MainActivity extends AppCompatActivity
 
     public void setupFirebaseAdapter() {
 
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
-//        mCasesDatabase = FirebaseDatabase.getInstance().getReference()
-//                .child("users")
-//                .child(userId)
-//                .child("cases");
-        mCasesDatabase = FirebaseFirestore.getInstance();
-
-        //Query query = mCasesDatabase.limitToLast(50);
-
-        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(userId)
-                .collection("cases");
-
-//        FirebaseRecyclerOptions<GttCase> options =
-//                new FirebaseRecyclerOptions.Builder<GttCase>()
-//                .setQuery(query, GttCase.class)
-//                .build();
+        com.google.firebase.firestore.Query query = MyDatabaseUtils.getUserDbReference(mUserId)
+                .collection(MyDatabaseUtils.CASE_DIRECTORY);
 
         FirestoreRecyclerOptions<GttCase> options = new FirestoreRecyclerOptions.Builder<GttCase>()
                 .setQuery(query, GttCase.class)
                 .build();
-
-        //mAdapter = new GttCaseRecyclerAdapter(options, this, this);
 
         mAdapter = new GttCaseRecyclerAdapter(options, this, this);
 
@@ -227,13 +192,9 @@ public class MainActivity extends AppCompatActivity
         String transitionName = "transitionName" + position;
         cardView.setTransitionName(transitionName);
 
-        // Get User Name
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
-
         Bundle bundle = new Bundle();
         bundle.putString(TRANSITION_NAME_KEY, transitionName);
-        bundle.putString(USER_NAME_KEY, userId);
+        bundle.putString(USER_NAME_KEY, mUserId);
         bundle.putString(CASE_REF, ref);
 
         CaseFragment caseFragment = new CaseFragment();

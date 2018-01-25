@@ -2,6 +2,8 @@ package com.zark.gttcheck.utilities;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.zark.gttcheck.models.IvGroup;
 
 /**
@@ -12,39 +14,28 @@ import com.zark.gttcheck.models.IvGroup;
 public class MyDatabaseUtils {
 
     private static final String USERS_DIRECTORY = "users";
-    private static final String CASE_DIRECTORY = "cases";
-    private static final String RX_DIRECTORY = "rx";
-    private static final String IV_DIRECTORY = "iv";
+    public static final String CASE_DIRECTORY = "cases";
+    public static final String RX_DIRECTORY = "rx";
+    public static final String IV_DIRECTORY = "iv";
 
-    public static DatabaseReference getRxDbReference(String userId) {
-        return FirebaseDatabase.getInstance().getReference()
-                .child(USERS_DIRECTORY)
-                .child(userId)
-                .child(RX_DIRECTORY);
+    public static DocumentReference getUserDbReference(String userId) {
+        return FirebaseFirestore.getInstance().collection(USERS_DIRECTORY)
+                .document(userId);
     }
 
-    public static DatabaseReference getCasesDbReference(String userId) {
-        return FirebaseDatabase.getInstance().getReference()
-                .child(USERS_DIRECTORY)
-                .child(userId)
-                .child(CASE_DIRECTORY);
+    public static DocumentReference getNewRxDbReference(String userId) {
+        return getUserDbReference(userId).collection(RX_DIRECTORY).document();
     }
 
-    public static DatabaseReference getIvDbReference(String userId) {
-        return FirebaseDatabase.getInstance().getReference()
-                .child(USERS_DIRECTORY)
-                .child(userId)
-                .child(IV_DIRECTORY);
+    public static DocumentReference getNewCaseDbReference(String userId) {
+        return getUserDbReference(userId).collection(CASE_DIRECTORY).document();
+    }
+
+    public static DocumentReference getNewIvDbReference(String userId) {
+        return getUserDbReference(userId).collection(IV_DIRECTORY).document();
     }
 
     public static void addRxToIvGroup(String userId, String ivGroupRef, String newRxRef) {
 
-        // Add Rx to IV Group
-        DatabaseReference ivDatabase = getIvDbReference(userId);
-        ivDatabase.child(ivGroupRef).child(RX_DIRECTORY).setValue(newRxRef, newRxRef);
-
-        // Add IV Group reference to Rx
-        DatabaseReference rxDatabase = getRxDbReference(userId);
-        rxDatabase.child(newRxRef).child(IV_DIRECTORY).child(ivGroupRef);
     }
 }
