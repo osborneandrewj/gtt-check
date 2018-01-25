@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.GttCase;
 
@@ -20,12 +20,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Osborne on 1/10/18.
+ * Created by Osborne on 1/24/2018.
  *
  */
 
-public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
-        GttCase, GttCaseListAdapter.GttCaseViewHolder> {
+public class GttCaseRecyclerAdapter
+        extends FirestoreRecyclerAdapter<GttCase, GttCaseRecyclerAdapter.GttCaseViewHolder>{
 
     // Container activity must contain this interface
     public interface OnCaseSelectedListener {
@@ -51,8 +51,8 @@ public class GttCaseListAdapter extends FirebaseRecyclerAdapter<
         }
     }
 
-    public GttCaseListAdapter(@NonNull FirebaseRecyclerOptions<GttCase> options,
-                              Context context, OnCaseSelectedListener listener) {
+    public GttCaseRecyclerAdapter(@NonNull FirestoreRecyclerOptions<GttCase> options,
+                                  Context context, OnCaseSelectedListener listener) {
         super(options);
         this.mContext = context.getApplicationContext();
         mListener = listener;

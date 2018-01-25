@@ -48,7 +48,9 @@ dependencies {
 
     // Database
     implementation "com.google.firebase:firebase-database:$FirebaseVersion"
-    implementation 'com.firebaseui:firebase-ui-database:3.1.3'
+    implementation "com.firebaseui:firebase-ui-database:$FirebaseUiVersion"
+    implementation "com.firebaseui:firebase-ui-firestore:$FirebaseUiVersion"
+    implementation "com.google.firebase:firebase-firestore:$FirebaseVersion"
 
     // RecyclerView expansion
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'

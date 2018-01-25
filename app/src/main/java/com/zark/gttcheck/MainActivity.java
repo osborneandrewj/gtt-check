@@ -25,12 +25,15 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.zark.gttcheck.adapters.GttCaseListAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.zark.gttcheck.adapters.GttCaseListAdapterOld;
+import com.zark.gttcheck.adapters.GttCaseRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
 
 import java.util.Arrays;
@@ -41,7 +44,7 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
-        implements GttCaseListAdapter.OnCaseSelectedListener {
+        implements GttCaseRecyclerAdapter.OnCaseSelectedListener {
 
     private static final int RC_SIGN_IN = 1886;
     private static final String TRANSITION_NAME_KEY = "transitionName";
@@ -51,11 +54,11 @@ public class MainActivity extends AppCompatActivity
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private DatabaseReference mCasesDatabase;
+    private FirebaseFirestore mCasesDatabase;
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
-    private GttCaseListAdapter mAdapter;
+    private GttCaseRecyclerAdapter mAdapter;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -91,10 +94,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                GttCase newCase = new GttCase(233, 5, 8, null);
-                String newKey = mCasesDatabase.push().getKey();
-                newCase.setReference(newKey);
-                mCasesDatabase.child(newKey).setValue(newCase);
+                mCasesDatabase.collection("users").document()
+
+//                GttCase newCase = new GttCase(233, 5, 8, null);
+//                String newKey = mCasesDatabase.push().getKey();
+//                newCase.setReference(newKey);
+//                mCasesDatabase.child(newKey).setValue(newCase);
 
                 //runRecyclerLayoutAnimation(mCasesRecyclerView);
 
@@ -166,19 +171,31 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
-        mCasesDatabase = FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(userId)
-                .child("cases");
+//        mCasesDatabase = FirebaseDatabase.getInstance().getReference()
+//                .child("users")
+//                .child(userId)
+//                .child("cases");
+        mCasesDatabase = FirebaseFirestore.getInstance();
 
-        Query query = mCasesDatabase.limitToLast(50);
+        //Query query = mCasesDatabase.limitToLast(50);
 
-        FirebaseRecyclerOptions<GttCase> options =
-                new FirebaseRecyclerOptions.Builder<GttCase>()
+        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .collection("cases");
+
+//        FirebaseRecyclerOptions<GttCase> options =
+//                new FirebaseRecyclerOptions.Builder<GttCase>()
+//                .setQuery(query, GttCase.class)
+//                .build();
+
+        FirestoreRecyclerOptions<GttCase> options = new FirestoreRecyclerOptions.Builder<GttCase>()
                 .setQuery(query, GttCase.class)
                 .build();
 
-        mAdapter = new GttCaseListAdapter(options, this, this);
+        //mAdapter = new GttCaseRecyclerAdapter(options, this, this);
+
+        mAdapter = new GttCaseRecyclerAdapter(options, this, this);
 
         mAdapter.startListening();
 

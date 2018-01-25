@@ -13,7 +13,6 @@ public class GttCase {
     private int ivCount;
     private int rxCount;
     private String reference;
-    private IvGroup ivGroup;
 
     public GttCase() {
 
@@ -56,13 +55,5 @@ public class GttCase {
 
     public void setReference(String reference) {
         this.reference = reference;
-    }
-
-    public IvGroup getIvGroup() {
-        return ivGroup;
-    }
-
-    public void setIvGroup(IvGroup ivGroup) {
-        this.ivGroup = ivGroup;
     }
 }
