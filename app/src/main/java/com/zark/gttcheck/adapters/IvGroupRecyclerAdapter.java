@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by Osborne on 1/19/2018.
@@ -34,6 +35,7 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
     // Container activity must contain this interface
     public interface OnIvGroupSelectedListener {
         void onIvGroupSelected(View view, int position);
+        void onIvGroupMenuSelected(View view, int position, String ivRef);
     }
 
     private Context mContext;
@@ -47,6 +49,9 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
         @BindView(R.id.card_view_iv_group) CardView cardView;
         @BindView(R.id.rx_list) LinearLayout rxList;
         @BindView(R.id.rv_expandable) ExpandableLayout expandMenu;
+        @BindView(R.id.ex_menu_add_rx) TextView menuAddRx;
+        @BindView(R.id.ex_menu_delete_rx) TextView menuDeleteRx;
+        @BindView(R.id.ex_menu_delete_iv) TextView menuDeleteIv;
 
         public IvGroupListAdapterViewHolder(View itemView) {
             super(itemView);
@@ -62,16 +67,16 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder, final int position, @NonNull IvGroup model) {
+    protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder, final int position, @NonNull final IvGroup model) {
 
         // Set a list of medications associated with this particular IV group
-        ArrayList<Rx> rxArrayList = new ArrayList<>(model.getRxAttached());
-        for (Rx currentRx : rxArrayList) {
-            View view  = LayoutInflater.from(mContext).inflate(R.layout.rx_layout, null);
-            TextView rxNameTextView = view.findViewById(R.id.rx_name);
-            rxNameTextView.setText(currentRx.getName());
-            holder.rxList.addView(view);
-        }
+//        final ArrayList<Rx> rxArrayList = new ArrayList<>(model.getRxAttached());
+//        for (Rx currentRx : rxArrayList) {
+//            View view  = LayoutInflater.from(mContext).inflate(R.layout.rx_layout, null);
+//            TextView rxNameTextView = view.findViewById(R.id.rx_name);
+//            rxNameTextView.setText(currentRx.getName());
+//            holder.rxList.addView(view);
+//        }
 
         // Expand when clicked
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +85,27 @@ public class IvGroupRecyclerAdapter extends FirebaseRecyclerAdapter<IvGroup,
                 holder.expandMenu.toggle();
                 //holder.cardView.setCardElevation(8);
                 mListener.onIvGroupSelected(view, holder.getAdapterPosition());
+            }
+        });
+
+        holder.menuAddRx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onIvGroupMenuSelected(view, position, model.getReference());
+            }
+        });
+
+        holder.menuDeleteRx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onIvGroupMenuSelected(view, position, model.getReference());
+            }
+        });
+
+        holder.menuDeleteIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onIvGroupMenuSelected(view, position, model.getReference());
             }
         });
     }

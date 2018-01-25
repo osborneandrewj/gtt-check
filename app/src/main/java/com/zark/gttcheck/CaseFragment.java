@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,6 +27,7 @@ import com.zark.gttcheck.adapters.IvGroupRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
+import com.zark.gttcheck.utilities.MyDatabaseUtils;
 
 import java.util.ArrayList;
 
@@ -116,16 +118,17 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
 
                 // List of medications
                 Rx newRx = new Rx("Medication", false);
-                ArrayList<Rx> list = new ArrayList<>();
-                list.add(newRx);
-                list.add(newRx);
-                list.add(newRx);
+                String newRxKey = MyDatabaseUtils.getRxDbReference(mUserId).push().getKey();
+                newRx.setReference(newRxKey);
+                MyDatabaseUtils.getRxDbReference(mUserId).child(newRxKey).setValue(newRx);
 
                 // Create a new IV group
-                IV_GROUP_KEY = mCaseDatabase.child("iv_groups").push().getKey();
-                IvGroup newIv = new IvGroup("New IV", IV_GROUP_KEY, false);
-                newIv.setRxAttached(list);
-                mCaseDatabase.child("iv_groups").child(IV_GROUP_KEY).setValue(newIv);
+                String newIvKey = MyDatabaseUtils.getIvDbReference(mUserId).push().getKey();
+                IvGroup newIv = new IvGroup("New IV", newIvKey, false);
+                MyDatabaseUtils.getIvDbReference(mUserId).child(newIvKey).setValue(newIv);
+
+                // Test
+                MyDatabaseUtils.addRxToIvGroup(mUserId, newIvKey, newRxKey);
             }
         });
 
@@ -163,6 +166,36 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
             mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat
                     .getColor(getContext(), R.color.colorAccent)));
             mIsFabFocused = true;
+        }
+    }
+
+    @Override
+    public void onIvGroupMenuSelected(View view, int position, final String ivRef) {
+        // Get the IV group
+        IvGroup ivGroup;
+        DatabaseReference ivReference = mCaseDatabase.child("iv_groups").child(ivRef).child("rxAttached");
+        int id = view.getId();
+        switch (id) {
+            case R.id.ex_menu_add_rx:
+                Timber.e("Add Rx");
+                mCaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        GttCase currentCase = dataSnapshot.getValue(GttCase.class);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                break;
+            case R.id.ex_menu_delete_rx:
+                Timber.e("Delete Rx");
+                break;
+            case R.id.ex_menu_delete_iv:
+                Timber.e("Delete IV");
+                break;
         }
     }
 

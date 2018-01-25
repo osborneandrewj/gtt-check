@@ -1,5 +1,8 @@
 package com.zark.gttcheck.models;
 
+import com.google.firebase.database.DatabaseReference;
+import com.zark.gttcheck.utilities.MyDatabaseUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -12,7 +15,6 @@ public class IvGroup {
     private String name;
     private String reference;
     private Boolean central;
-    private ArrayList<Rx> rxAttached;
 
     public IvGroup() {
 
@@ -51,13 +53,5 @@ public class IvGroup {
 
     public void setCentral(Boolean central) {
         this.central = central;
-    }
-
-    public ArrayList<Rx> getRxAttached() {
-        return rxAttached;
-    }
-
-    public void setRxAttached(ArrayList<Rx> rxAttached) {
-        this.rxAttached = rxAttached;
     }
 }
