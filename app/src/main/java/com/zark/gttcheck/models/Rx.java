@@ -1,7 +1,5 @@
 package com.zark.gttcheck.models;
 
-import android.support.annotation.Nullable;
-
 import java.util.Map;
 
 /**
@@ -12,17 +10,17 @@ import java.util.Map;
 public class Rx {
 
     private String name;
-    private Boolean centralRequired;
-    private String reference;
+    private Boolean central;
+    private String ref;
     private Map<String, Boolean> iv;
 
     public Rx() {
         // Empty constructor used by Firebase
     }
 
-    public Rx(String name, Boolean centralRequired) {
+    public Rx(String name, Boolean central) {
         this.name = name;
-        this.centralRequired = centralRequired;
+        this.central = central;
     }
 
     public String getName() {
@@ -33,20 +31,20 @@ public class Rx {
         this.name = name;
     }
 
-    public Boolean getCentralRequired() {
-        return centralRequired;
+    public Boolean getCentral() {
+        return central;
     }
 
-    public void setCentralRequired(Boolean centralRequired) {
-        this.centralRequired = centralRequired;
+    public void setCentral(Boolean central) {
+        this.central = central;
     }
 
-    public String getReference() {
-        return reference;
+    public String getRef() {
+        return ref;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 
     public Map<String, Boolean> getIv() {

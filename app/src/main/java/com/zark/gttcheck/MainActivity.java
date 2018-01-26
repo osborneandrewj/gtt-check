@@ -2,8 +2,10 @@ package com.zark.gttcheck;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.transition.ChangeBounds;
@@ -24,20 +26,15 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.zark.gttcheck.adapters.GttCaseListAdapterOld;
-import com.zark.gttcheck.adapters.GttCaseRecyclerAdapter;
+import com.zark.gttcheck.adapters.CaseRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
-import com.zark.gttcheck.utilities.MyDatabaseUtils;
+import com.zark.gttcheck.utilities.MyDbUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,11 +44,10 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
-        implements GttCaseRecyclerAdapter.OnCaseSelectedListener {
+        implements CaseRecyclerAdapter.OnCaseSelectedListener {
 
     private static final int RC_SIGN_IN = 1886;
     private static final String TRANSITION_NAME_KEY = "transitionName";
-    private static final String USER_NAME_KEY = "userNameKey";
     private static final String CASE_REF = "caseRef";
 
     // Firebase instance variables
@@ -61,7 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     // Case overview recyclerview
     private RecyclerView.LayoutManager mCasesLayoutManager;
-    private GttCaseRecyclerAdapter mAdapter;
+    private CaseRecyclerAdapter mAdapter;
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -95,6 +91,11 @@ public class MainActivity extends AppCompatActivity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.setFirestoreSettings(settings);
 
+        // Add user ID to preferences
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(MyDbUtils.USER_ID_KEY, mUserId).apply();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -105,10 +106,10 @@ public class MainActivity extends AppCompatActivity
 
                 GttCase newCase = new GttCase(233, 5, 8, null);
 
-                DocumentReference newCaseRef = MyDatabaseUtils.getNewCaseDbReference(mUserId);
+                DocumentReference newCaseRef = MyDbUtils.getNewCaseDbRef(mUserId);
                 newCase.setReference(newCaseRef.getId());
-                MyDatabaseUtils.getUserDbReference(mUserId)
-                        .collection(MyDatabaseUtils.CASE_DIRECTORY)
+                MyDbUtils.getUserDbRef(mUserId)
+                        .collection(MyDbUtils.CASE_DIR)
                         .document(newCaseRef.getId())
                         .set(newCase);
             }
@@ -171,14 +172,14 @@ public class MainActivity extends AppCompatActivity
 
     public void setupFirebaseAdapter() {
 
-        com.google.firebase.firestore.Query query = MyDatabaseUtils.getUserDbReference(mUserId)
-                .collection(MyDatabaseUtils.CASE_DIRECTORY);
+        com.google.firebase.firestore.Query query = MyDbUtils.getUserDbRef(mUserId)
+                .collection(MyDbUtils.CASE_DIR);
 
         FirestoreRecyclerOptions<GttCase> options = new FirestoreRecyclerOptions.Builder<GttCase>()
                 .setQuery(query, GttCase.class)
                 .build();
 
-        mAdapter = new GttCaseRecyclerAdapter(options, this, this);
+        mAdapter = new CaseRecyclerAdapter(options, this, this);
 
         mAdapter.startListening();
 
@@ -187,7 +188,8 @@ public class MainActivity extends AppCompatActivity
         mCasesRecyclerView.setVisibility(View.VISIBLE);
 
         int animId = R.anim.layout_animation_fall_down;
-        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, animId);
+        LayoutAnimationController animation =
+                AnimationUtils.loadLayoutAnimation(this, animId);
         mCasesRecyclerView.setLayoutAnimation(animation);
     }
 
@@ -200,11 +202,10 @@ public class MainActivity extends AppCompatActivity
 
         Bundle bundle = new Bundle();
         bundle.putString(TRANSITION_NAME_KEY, transitionName);
-        bundle.putString(USER_NAME_KEY, mUserId);
         bundle.putString(CASE_REF, ref);
 
-        CaseFragment caseFragment = new CaseFragment();
-        caseFragment.setArguments(bundle);
+        CaseFrag caseFrag = new CaseFrag();
+        caseFrag.setArguments(bundle);
 
         // Transition for entering fragment
         Slide slideTransition = new Slide(Gravity.TOP);
@@ -217,16 +218,16 @@ public class MainActivity extends AppCompatActivity
         hideCaseList();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            caseFragment.setSharedElementEnterTransition(new ChangeBounds());
-            caseFragment.setEnterTransition(slideTransition);
-            caseFragment.setExitTransition(new Fade());
-            caseFragment.setSharedElementReturnTransition(new ChangeBounds());
+            caseFrag.setSharedElementEnterTransition(new ChangeBounds());
+            caseFrag.setEnterTransition(slideTransition);
+            caseFrag.setExitTransition(new Fade());
+            caseFrag.setSharedElementReturnTransition(new ChangeBounds());
         }
 
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .addSharedElement(cardView, transitionName)
-                .replace(R.id.frag_container, caseFragment)
+                .replace(R.id.frag_container, caseFrag)
                 .addToBackStack("heya")
                 .commit();
     }
