@@ -2,6 +2,8 @@ package com.zark.gttcheck.models;
 
 import android.support.annotation.Nullable;
 
+import java.util.Map;
+
 /**
  * Created by Osborne on 1/19/2018.
  *
@@ -12,6 +14,7 @@ public class Rx {
     private String name;
     private Boolean centralRequired;
     private String reference;
+    private Map<String, Boolean> iv;
 
     public Rx() {
         // Empty constructor used by Firebase
@@ -44,5 +47,13 @@ public class Rx {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public Map<String, Boolean> getIv() {
+        return iv;
+    }
+
+    public void setIv(Map<String, Boolean> iv) {
+        this.iv = iv;
     }
 }

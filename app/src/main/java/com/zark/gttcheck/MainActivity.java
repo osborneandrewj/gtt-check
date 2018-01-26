@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.zark.gttcheck.adapters.GttCaseListAdapterOld;
 import com.zark.gttcheck.adapters.GttCaseRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
@@ -88,6 +89,11 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.setFirestoreSettings(settings);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

@@ -2,6 +2,8 @@ package com.zark.gttcheck.models;
 
 import android.support.annotation.Nullable;
 
+import java.util.Map;
+
 /**
  * Created by osborne on 11/13/2017.
  *
@@ -13,6 +15,8 @@ public class GttCase {
     private int ivCount;
     private int rxCount;
     private String reference;
+    private Map<String, Boolean> iv;
+    private Map<String, Boolean> rx;
 
     public GttCase() {
 
@@ -55,5 +59,21 @@ public class GttCase {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public Map<String, Boolean> getIv() {
+        return iv;
+    }
+
+    public void setIv(Map<String, Boolean> iv) {
+        this.iv = iv;
+    }
+
+    public Map<String, Boolean> getRx() {
+        return rx;
+    }
+
+    public void setRx(Map<String, Boolean> rx) {
+        this.rx = rx;
     }
 }

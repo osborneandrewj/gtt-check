@@ -4,6 +4,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.zark.gttcheck.utilities.MyDatabaseUtils;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by Osborne on 1/19/2018.
@@ -15,6 +16,7 @@ public class IvGroup {
     private String name;
     private String reference;
     private Boolean central;
+    private Map<String, Boolean> rx;
 
     public IvGroup() {
 
@@ -53,5 +55,13 @@ public class IvGroup {
 
     public void setCentral(Boolean central) {
         this.central = central;
+    }
+
+    public Map<String, Boolean> getRx() {
+        return rx;
+    }
+
+    public void setRx(Map<String, Boolean> rx) {
+        this.rx = rx;
     }
 }

@@ -14,7 +14,13 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.zark.gttcheck.R;
+import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
 import com.zark.gttcheck.utilities.MyDatabaseUtils;
@@ -22,6 +28,7 @@ import com.zark.gttcheck.utilities.MyDatabaseUtils;
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +51,7 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
     private Context mContext;
     private OnIvGroupSelectedListener mListener;
     private String mUserId;
+    private String mCaseId;
 
     /**
      * ViewHolder for each IV item
@@ -64,17 +72,39 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
     }
 
     public IvGroupRecyclerAdapter(Context context, @NonNull FirestoreRecyclerOptions<IvGroup> options,
-                                  OnIvGroupSelectedListener listener, String userId) {
+                                  OnIvGroupSelectedListener listener, String userId, String caseId) {
         super(options);
         mContext = context;
         mListener = listener;
         mUserId = userId;
+        mCaseId = caseId;
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder, final int position, @NonNull final IvGroup model) {
+    protected void onBindViewHolder(@NonNull final IvGroupListAdapterViewHolder holder,
+                                    final int position, @NonNull final IvGroup model) {
 
         // Set a list of medications associated with this particular IV group
+        CollectionReference rxCollection =
+                MyDatabaseUtils.getIvDbColReference(mUserId, mCaseId).document(model.getReference())
+                        .collection(MyDatabaseUtils.RX_DIRECTORY);
+                rxCollection.whereEqualTo("iv." + model.getReference(), true)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            Timber.e("Size: %s", task.getResult().size());
+                            List<Rx> rxArrayList = task.getResult().toObjects(Rx.class);
+                            for (Rx currentRx : rxArrayList) {
+                                View view = LayoutInflater.from(mContext).inflate(R.layout.rx_layout, null);
+                                TextView rxNameTextView = view.findViewById(R.id.rx_name);
+                                rxNameTextView.setText(currentRx.getName());
+                                holder.rxList.addView(view);
+                            }
+                        }
+                    });
+
+
 //        final ArrayList<Rx> rxArrayList = new ArrayList<>(model.getRxAttached());
 //        for (Rx currentRx : rxArrayList) {
 //            View view  = LayoutInflater.from(mContext).inflate(R.layout.rx_layout, null);
@@ -82,9 +112,7 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
 //            rxNameTextView.setText(currentRx.getName());
 //            holder.rxList.addView(view);
 //        }
-        MyDatabaseUtils.getRxColReference(mUserId
 
-        )
         // Expand when clicked
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
