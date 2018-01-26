@@ -17,6 +17,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.zark.gttcheck.R;
 import com.zark.gttcheck.models.IvGroup;
 import com.zark.gttcheck.models.Rx;
+import com.zark.gttcheck.utilities.MyDatabaseUtils;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -42,6 +43,7 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
 
     private Context mContext;
     private OnIvGroupSelectedListener mListener;
+    private String mUserId;
 
     /**
      * ViewHolder for each IV item
@@ -62,10 +64,11 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
     }
 
     public IvGroupRecyclerAdapter(Context context, @NonNull FirestoreRecyclerOptions<IvGroup> options,
-                                  OnIvGroupSelectedListener listener) {
+                                  OnIvGroupSelectedListener listener, String userId) {
         super(options);
         mContext = context;
         mListener = listener;
+        mUserId = userId;
     }
 
     @Override
@@ -79,7 +82,9 @@ public class IvGroupRecyclerAdapter extends FirestoreRecyclerAdapter<IvGroup,
 //            rxNameTextView.setText(currentRx.getName());
 //            holder.rxList.addView(view);
 //        }
+        MyDatabaseUtils.getRxColReference(mUserId
 
+        )
         // Expand when clicked
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

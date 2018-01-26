@@ -30,7 +30,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.zark.gttcheck.adapters.IvGroupRecyclerAdapter;
 import com.zark.gttcheck.models.GttCase;
 import com.zark.gttcheck.models.IvGroup;
@@ -80,7 +82,6 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_case, container, false);
-
         ButterKnife.bind(this, view);
 
         Bundle bundle = getArguments();
@@ -95,23 +96,27 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
         }
 
 
-        // Add data to header once
-        // Note: This does not update dynamically
-        mCaseDatabase = FirebaseFirestore.getInstance();
-        DocumentReference reference = mCaseDatabase.collection("users")
-                .document(mUserId)
-                .collection("cases")
+        // Add data to header
+        DocumentReference reference = MyDatabaseUtils.getUserDbReference(mUserId)
+                .collection(MyDatabaseUtils.CASE_DIRECTORY)
                 .document(mCaseRef);
-        reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                GttCase currentCase = documentSnapshot.toObject(GttCase.class);
-                mRxCount.setText(String.valueOf(currentCase.getRxCount()));
-                mIvCount.setText(String.valueOf(currentCase.getIvCount()));
-                mCaseId.setText(String.valueOf(currentCase.getIdNumber()));
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Timber.e("Setting case header failed: %s", e.toString());
+                    return;
+                }
+
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    GttCase currentCase = documentSnapshot.toObject(GttCase.class);
+                    mRxCount.setText(String.valueOf(currentCase.getRxCount()));
+                    mIvCount.setText(String.valueOf(currentCase.getIvCount()));
+                    mCaseId.setText(String.valueOf(currentCase.getIdNumber()));
+                }
             }
         });
-
 
         mFab.setOnClickListener(new View.OnClickListener() {
 
@@ -121,20 +126,11 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
 
                 // Create a new IV and add it to the database
                 IvGroup newIv = new IvGroup("New IV", null, false);
-                DocumentReference newIvRef = mCaseDatabase.collection("users")
-                        .document(mUserId)
-                        .collection("cases")
-                        .document(mCaseRef)
-                        .collection("iv")
-                        .document();
+
+                DocumentReference newIvRef = MyDatabaseUtils.getNewIvDbReference(mUserId, mCaseRef);
                 newIv.setReference(newIvRef.getId());
-                mCaseDatabase.collection("users")
-                        .document(mUserId)
-                        .collection("cases")
-                        .document(mCaseRef)
-                        .collection("iv")
-                        .document(newIvRef.getId())
-                        .set(newIv);
+                MyDatabaseUtils.getIvDbColReference(
+                        mUserId, mCaseRef).document(newIv.getReference()).set(newIv);
             }
         });
 
@@ -147,11 +143,8 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
     private void startRecyclerView() {
 
         mCaseDatabase = FirebaseFirestore.getInstance();
-        com.google.firebase.firestore.Query query = mCaseDatabase.collection("users")
-                .document(mUserId)
-                .collection("cases")
-                .document(mCaseRef)
-                .collection("iv");
+        com.google.firebase.firestore.Query query =
+                MyDatabaseUtils.getIvDbColReference(mUserId, mCaseRef);
 
         FirestoreRecyclerOptions<IvGroup> options = new FirestoreRecyclerOptions.Builder<IvGroup>()
                 .setQuery(query, IvGroup.class)
@@ -178,33 +171,43 @@ public class CaseFragment extends Fragment implements IvGroupRecyclerAdapter.OnI
     }
 
     @Override
-    public void onIvGroupMenuSelected(View view, int position, final String ivRef) {
+    public void onIvGroupMenuSelected(final View view, final int position, final String ivRef) {
         // Get the IV group
-        IvGroup ivGroup;
+        DocumentReference reference = MyDatabaseUtils.getIvDbColReference(mUserId, mCaseRef)
+                .document(ivRef);
+        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Timber.e("Setting case header failed: %s", e.toString());
+                    return;
+                }
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    IvGroup currentIv = documentSnapshot.toObject(IvGroup.class);
+                    Timber.e("Current IV: %s", currentIv.getReference());
+                    onExtendedMenuClicked(view, position, currentIv);
+                }
+            }
+        });
+
         //DatabaseReference ivReference = mCaseDatabase.child("iv_groups").child(ivRef).child("rxAttached");
+
+    }
+
+    public void onExtendedMenuClicked(View view, int position, IvGroup iv) {
         int id = view.getId();
         switch (id) {
             case R.id.ex_menu_add_rx:
                 Timber.e("Add Rx");
+
                 Rx newRx = new Rx("New Medication", false);
-                DocumentReference newRxRef = mCaseDatabase.collection("users")
-                        .document(mUserId)
-                        .collection("cases")
-                        .document(mCaseRef)
-                        .collection("iv")
-                        .document(ivRef)
-                        .collection("rx")
-                        .document();
-                newRx.setReference(newRxRef.getId());
-                mCaseDatabase.collection("users")
-                        .document(mUserId)
-                        .collection("cases")
-                        .document(mCaseRef)
-                        .collection("iv")
-                        .document(ivRef)
-                        .collection("rx")
-                        .document(newRxRef.getId())
-                        .set(newRx);
+
+                newRx.setReference(
+                        MyDatabaseUtils.getNewRxDbReference(
+                                mUserId, mCaseRef, iv.getReference()).getId());
+                MyDatabaseUtils.getRxColReference(mUserId, mCaseRef, iv.getReference())
+                        .document(newRx.getReference()).set(newRx);
+
                 mAdapter.notifyItemChanged(position);
                 break;
             case R.id.ex_menu_delete_rx:
