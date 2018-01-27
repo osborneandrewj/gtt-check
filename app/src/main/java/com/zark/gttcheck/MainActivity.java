@@ -12,6 +12,7 @@ import android.support.transition.ChangeBounds;
 import android.support.transition.Fade;
 import android.support.transition.Slide;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -104,14 +105,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                GttCase newCase = new GttCase(233, 5, 8, null);
+//                GttCase newCase = new GttCase(233, 5, 8, null);
+//
+//                DocumentReference newCaseRef = MyDbUtils.getNewCaseDbRef(mUserId);
+//                newCase.setReference(newCaseRef.getId());
+//                MyDbUtils.getUserDbRef(mUserId)
+//                        .collection(MyDbUtils.CASE_DIR)
+//                        .document(newCaseRef.getId())
+//                        .set(newCase);
 
-                DocumentReference newCaseRef = MyDbUtils.getNewCaseDbRef(mUserId);
-                newCase.setReference(newCaseRef.getId());
-                MyDbUtils.getUserDbRef(mUserId)
-                        .collection(MyDbUtils.CASE_DIR)
-                        .document(newCaseRef.getId())
-                        .set(newCase);
+                hideCaseList();
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                AddCaseFrag frag = new AddCaseFrag();
+                transaction.replace(R.id.frag_container, frag).addToBackStack("heythere")
+                .commit();
+
             }
         });
 
@@ -303,5 +312,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        // If there is a fragment shown, reload this fragment
+        if (mFragmentManager.getBackStackEntryCount() != 0) {
+            hideCaseList();
+        }
     }
 }

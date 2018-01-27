@@ -81,7 +81,8 @@ public class CaseFrag extends Fragment implements IvRecyclerAdapter.OnIvGroupSel
                 mCaseHeader.setTransitionName(transitionName);
             }
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            mUserId = prefs.getString(MyDbUtils.USER_ID_KEY, "null");
+            mUserId = prefs.getString(MyDbUtils.USER_ID_KEY, null);
+            Timber.e("User id: %s", mUserId);
             mCaseId = bundle.getString(CASE_REF);
         }
 
