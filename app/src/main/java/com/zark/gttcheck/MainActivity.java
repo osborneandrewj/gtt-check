@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity
 
     // Authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
-            new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
+            new AuthUI.IdpConfig.EmailBuilder().build(),
+            new AuthUI.IdpConfig.GoogleBuilder().build());
 
     private FragmentManager mFragmentManager;
 
@@ -85,17 +85,11 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize Firebase components
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
                 .build();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.setFirestoreSettings(settings);
-
-        // Add user ID to preferences
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(MyDbUtils.USER_ID_KEY, mUserId).apply();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,13 +108,18 @@ public class MainActivity extends AppCompatActivity
 //                        .document(newCaseRef.getId())
 //                        .set(newCase);
 
-                hideCaseList();
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction transaction = fm.beginTransaction();
-                AddCaseFrag frag = new AddCaseFrag();
-                transaction.replace(R.id.frag_container, frag).addToBackStack("heythere")
-                .commit();
+//                hideCaseList();
+//                FragmentManager fm = getSupportFragmentManager();
+//                FragmentTransaction transaction = fm.beginTransaction();
+//                AddCaseFrag frag = new AddCaseFrag();
+//                transaction.replace(R.id.frag_container, frag).addToBackStack("heythere")
+//                .commit();
+//                Timber.e("Loading fragment.");
 
+                // open new activity
+                Intent intent = new Intent(getApplicationContext(), AddCaseActivity.class);
+                startActivity(intent);
+                hideCaseList();
             }
         });
 
@@ -133,6 +132,7 @@ public class MainActivity extends AppCompatActivity
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+
                     onSignedInInitialize();
                     setupFirebaseAdapter();
                 } else {
@@ -166,6 +166,11 @@ public class MainActivity extends AppCompatActivity
 
     public void onSignedInInitialize() {
         mCasesRecyclerView.setVisibility(View.VISIBLE);
+        // Add user ID to preferences
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(MyDbUtils.USER_ID_KEY, mUserId).apply();
+        mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     public void onSignedOutHideUI() {
@@ -176,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         mCasesRecyclerView.animate().alpha(0.0f).setDuration(1000);
         mCasesRecyclerView.setVisibility(View.GONE);
         mCasesRecyclerView.animate().alpha(1.0f);
-        fab.setVisibility(View.GONE);
+        //fab.setVisibility(View.GONE);
     }
 
     public void setupFirebaseAdapter() {
@@ -285,10 +290,10 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
+        fab.setVisibility(View.VISIBLE);
         if (mFragmentManager.getBackStackEntryCount() > 0) {
             mFragmentManager.popBackStackImmediate();
             mCasesRecyclerView.setVisibility(View.VISIBLE);
-            fab.setVisibility(View.VISIBLE);
             runRecyclerLayoutAnimation(mCasesRecyclerView);
         } else {
             super.onBackPressed();

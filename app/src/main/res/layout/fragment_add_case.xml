@@ -96,41 +96,62 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayout2"
+        android:id="@+id/frame_sel_name"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:background="@color/colorCasesRVLightSteelBlue"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout3"
+        app:layout_constraintBottom_toTopOf="@+id/frame_sel_iv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frame_rx_edit">
 
+        <TextView
+            android:id="@+id/tv_label_sel_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/label_select_name" />
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayout3"
+        android:id="@+id/frame_sel_iv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@color/colorCasesRVLightSteelBlue"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout4"
+        app:layout_constraintBottom_toTopOf="@+id/frame_sel_rx"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/frame_sel_name">
 
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="TextView" />
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayout4"
+        android:id="@+id/frame_sel_rx"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -138,7 +159,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_add_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout3">
+        app:layout_constraintTop_toBottomOf="@+id/frame_sel_iv">
 
     </FrameLayout>
 
@@ -151,13 +172,13 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/btn_add"
+            android:id="@+id/btn_done"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@color/colorAccent"
             android:clickable="true"
             android:focusable="true"
-            android:background="@color/colorAccent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
             android:text="@string/btn_add_text"
             android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse" />

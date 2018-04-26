@@ -6,8 +6,14 @@
     <string name="action_sign_out">Sign out</string>
 
     <!--Add / Edit Case Fragment-->
-    <string name="btn_add_text">Add</string>
+    <string name="btn_add_text">Done</string>
     <string name="id_num_starting_text">000</string>
+    <string name="label_select_name">Select a name</string>
+    <string name="label_select_iv">Add an IV</string>
+    <string name="label_select_rx">Add an Rx</string>
+
+    <!--Add / Edit Case Name-->
+    <string name="edit_text_hint_name">Create a unique identifier</string>
 
     <!--Case Overview Item-->
     <string name="label_case_iv">IV</string>
@@ -21,5 +27,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_add_case">AddCaseActivity</string>
 
 </resources>
