@@ -139,12 +139,12 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_gravity="center"
             android:clickable="true"
             android:focusable="true"
-            android:layout_gravity="center"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
-            android:text="TextView" />
+            android:text="TextViewTest" />
     </FrameLayout>
 
     <FrameLayout
