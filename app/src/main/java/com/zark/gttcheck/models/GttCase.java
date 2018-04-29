@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class GttCase {
 
-    private int idNumber;
+    private String name;
     private int ivCount;
     private int rxCount;
     private String reference;
@@ -22,19 +22,19 @@ public class GttCase {
 
     }
 
-    public GttCase(int idNumber, int ivCount, int rxCount, @Nullable String aReference) {
-        this.idNumber = idNumber;
+    public GttCase(String name, int ivCount, int rxCount, @Nullable String aReference) {
+        this.name = name;
         this.ivCount = ivCount;
         this.rxCount = rxCount;
         this.reference = aReference;
     }
 
-    public int getIdNumber() {
-        return idNumber;
+    public String getName() {
+        return name;
     }
 
-    public void setIdNumber(int idNumber) {
-        this.idNumber = idNumber;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getIvCount() {

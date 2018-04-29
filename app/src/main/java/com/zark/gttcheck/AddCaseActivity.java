@@ -1,20 +1,17 @@
 package com.zark.gttcheck;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.zark.gttcheck.utilities.MyStringKeys;
+
 import timber.log.Timber;
 
 public class AddCaseActivity extends AppCompatActivity
         implements EditNameFrag.OnFragmentInteractionListener,
-        AddCaseFrag.OnAddCaseFragmentListener {
+        AddCaseFrag.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +27,25 @@ public class AddCaseActivity extends AppCompatActivity
                 .addToBackStack(newAddCaseFrag.getClass().getName()).commit();
     }
 
+    /**
+     * From EditNameFrag
+     *
+     * This method occurs when user has edited or created the name of a case
+     */
     @Override
     public void onNameEdited(String newName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(MyStringKeys.CASE_NAME, newName);
+
+        AddCaseFrag addCaseFrag = new AddCaseFrag();
+        addCaseFrag.setArguments(bundle);
         FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStackImmediate();
+        fm.beginTransaction().replace(R.id.add_case_container, addCaseFrag).commit();
     }
 
+    /**
+     * User has selected "Done" from the AddCaseActivity
+     */
     @Override
     public void onDoneButtonPressed() {
         //TODO: enter new case into database

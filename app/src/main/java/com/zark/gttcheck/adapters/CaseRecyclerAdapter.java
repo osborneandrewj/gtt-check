@@ -62,7 +62,7 @@ public class CaseRecyclerAdapter
     @Override
     protected void onBindViewHolder(@NonNull final GttCaseViewHolder holder,
                                     int position, @NonNull final GttCase model) {
-        holder.idNumber.setText(String.valueOf(model.getIdNumber()));
+        holder.idNumber.setText(String.valueOf(model.getName()));
         holder.ivCount.setText(String.valueOf(model.getIvCount()));
         holder.rxCount.setText(String.valueOf(model.getRxCount()));
         holder.cardView.setOnClickListener(new View.OnClickListener() {

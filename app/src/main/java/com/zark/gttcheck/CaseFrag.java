@@ -104,7 +104,7 @@ public class CaseFrag extends Fragment implements IvRecyclerAdapter.OnIvGroupSel
                     GttCase currentCase = documentSnapshot.toObject(GttCase.class);
                     tv_RxCount.setText(String.valueOf(currentCase.getRxCount()));
                     tv_IvCount.setText(String.valueOf(currentCase.getIvCount()));
-                    tv_CaseId.setText(String.valueOf(currentCase.getIdNumber()));
+                    tv_CaseId.setText(String.valueOf(currentCase.getName()));
                 }
             }
         });

@@ -51,7 +51,6 @@ public class EditNameFrag extends Fragment {
 
                     if (i == EditorInfo.IME_ACTION_DONE) {
                         mListener.onNameEdited(nameEditText.getText().toString());
-                        FragmentManager fm = getFragmentManager();
                     } else {
                         //TODO: handle blank error
                     }
@@ -107,7 +106,6 @@ public class EditNameFrag extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onNameEdited(String newName);
     }
 }
