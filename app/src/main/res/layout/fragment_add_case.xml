@@ -144,7 +144,7 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
-            android:text="TextViewTested" />
+            android:text="TextViewTest" />
     </FrameLayout>
 
     <FrameLayout
